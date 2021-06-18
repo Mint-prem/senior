@@ -2,6 +2,7 @@ const express = require("express");
 const cows = require("../controller/cows");
 const milk = require("../controller/milk");
 const species = require("../controller/species");
+const typecow = require("../controller/typecow");
 const router = express.Router();
 
 //route cow
@@ -23,6 +24,11 @@ router.get('/milks', async(req, res, next) =>{
 })
 
 //route typecow
+router.get('/typecows', async(req, res, next) =>{
+    const ret = await typecow.getAllTypecow();
+    res.send(ret);
+})
+
 
 //route vaccine
 
