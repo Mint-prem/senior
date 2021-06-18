@@ -55,12 +55,12 @@ cows.addCow = async(json) =>{
     return ret.message;
  }
 
- cows.updateCow = async(id,json) => {
+cows.updateCow = async(id,json) => {
      let ret = {}
-        ret.message = "Cannot update cow data"
+        ret.message = "Cannot update cow"
         const findCow = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)
 
-        if(findCow.rows.length==0||null){
+        if(findCow.rows.length==0||null) {
             ret.message = "Don't have cow ID " + id;
             return ret.message;
         } else {
@@ -78,5 +78,30 @@ cows.addCow = async(json) =>{
 
         return ret.message;
  }
+
+cows.deleteCow = async(id) => {
+    let ret = {}
+        ret.message = "Cannot Delete cow"
+        const findCow = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)
+
+        if(findCow.rows.length==0||null) {
+            ret.message = "Don't have cow ID " + id;
+            return ret.message;
+        } else {
+            try {
+                const newCow = await pool.query(`DELETE FROM cow WHERE cow_id = $1`, [id]);
+                ret.message = "Cow Deleted :)"
+                console.log(ret.message);
+                return ret.message;
+            } catch (err) {
+                ret.message = "Cannot delete cow"
+                console.error(err.message);
+            }
+        }
+
+        return ret.message;
+
+
+}
 
 module.exports = cows;
