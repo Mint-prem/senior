@@ -1,4 +1,5 @@
 const express = require("express");
+const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
 const milk = require("../controller/milk");
 const species = require("../controller/species");
@@ -45,6 +46,10 @@ router.get('/shedule', async(req, res, next) =>{
 })
 
 //route abdominal
+router.get('/abdominal', async(req, res, next) =>{
+    const ret = await abdominal.getAllabdominal();
+    res.send(ret);
+})
 
 //route parturition
 
