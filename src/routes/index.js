@@ -1,4 +1,5 @@
 const express = require("express");
+const { route } = require("../../server");
 const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
 const milk = require("../controller/milk");
@@ -45,6 +46,12 @@ router.delete('/cows/:id', async(req, res, next) => {
 //route species
 router.get('/species', async(req, res, next) =>{
     const ret = await species.getAllSpecies();
+    res.send(ret);
+})
+
+router.get('/species/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await species.getSpeciesByID(id);
     res.send(ret);
 })
 
