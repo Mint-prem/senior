@@ -9,10 +9,10 @@ cows.getAllCow = async()=>{
     try {
         const ret = await pool.query(`SELECT * FROM cow`);
         ret.message = "Sussess :)"
-        console.log(ret.rows);
         console.log(ret.message);
         return ret.rows;
     } catch (err) {
+        ret.message = "Error"
         console.error(err.message);
     }
     return ret.message;
@@ -26,7 +26,6 @@ cows.getCowByID = async(id) =>{
         const ret = await pool.query("SELECT * FROM cow WHERE cow_id = $1", [id]);
         if(ret.rows.length!=0){
             ret.message ="Sussess :)"
-            console.log(ret.rows);
             console.log(ret.message);
             return ret.rows;
         } else {
@@ -34,6 +33,7 @@ cows.getCowByID = async(id) =>{
             return ret.message;
         }
     } catch (err) {
+        ret.message = "Error";
         console.error(err.message);
     }
     return ret.message;
@@ -50,10 +50,11 @@ cows.addNewCow = async(json) =>{
         console.log(ret.message);
         return ret.message;
     } catch (err) {
+        ret.message = "Error"
         console.error(err.message);
     }
     return ret.message;
- }
+}
 
 cows.updateCowByID = async(id,json) => {
      let ret = {}
@@ -65,19 +66,19 @@ cows.updateCowByID = async(id,json) => {
             return ret.message;
         } else {
             try {
-                const newCow = await pool.query(`UPDATE cow SET cow_no = $1, cow_name = $2, cow_birthday = $3, cow_sex = $4, cow_image1 = $5, cow_image2 = $6, cow_image3 = $7, note = $8, typecow_id = $9, species_id = $10, farm_id = $11, statuscow_id = $12 WHERE cow_id = $13`, 
+                const ret = await pool.query(`UPDATE cow SET cow_no = $1, cow_name = $2, cow_birthday = $3, cow_sex = $4, cow_image1 = $5, cow_image2 = $6, cow_image3 = $7, note = $8, typecow_id = $9, species_id = $10, farm_id = $11, statuscow_id = $12 WHERE cow_id = $13`, 
                 [json.cow_no, json.cow_name, json.cow_birthday, json.cow_sex, json.cow_image1, json.cow_image2, json.cow_image3, json.note, json.typecow_id, json.species_id, json.farm_id, json.statuscow_id, id]);
                 ret.message = "Cow Updated :)"
                 console.log(ret.message);
                 return ret.message;
             } catch (err) {
-                ret.message = "Cannot updated cow"
+                ret.message = "Error"
                 console.error(err.message);
             }
         }
 
         return ret.message;
- }
+}
 
 cows.deleteCowByID = async(id) => {
     let ret = {}
@@ -89,18 +90,17 @@ cows.deleteCowByID = async(id) => {
             return ret.message;
         } else {
             try {
-                const newCow = await pool.query(`DELETE FROM cow WHERE cow_id = $1`, [id]);
+                const ret = await pool.query(`DELETE FROM cow WHERE cow_id = $1`, [id]);
                 ret.message = "Cow Deleted :)"
                 console.log(ret.message);
                 return ret.message;
             } catch (err) {
-                ret.message = "Cannot delete cow"
+                ret.message = "Error"
                 console.error(err.message);
             }
         }
 
         return ret.message;
-
 
 }
 
