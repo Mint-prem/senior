@@ -7,6 +7,7 @@ const species = require("../controller/species");
 const typecow = require("../controller/typecow");
 const vaccine = require("../controller/vaccine");
 const vaccine_shedule = require("../controller/vaccine_shedule");
+
 const router = express.Router();
 
 //route cow
@@ -14,6 +15,26 @@ router.get('/cows', async(req, res, next) =>{
     const ret = await cows.getAllCow();
     res.send(ret);
 });  
+
+router.get('/cows/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await cows.getCow(id);
+    res.send(ret);
+});  
+
+router.post('/cows', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await cows.addCow(json);
+    res.send(ret);
+})
+
+router.put('/cows/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await cows.updateCow(id,json);
+    res.send(ret);
+})
+
 
 //route species
 router.get('/species', async(req, res, next) =>{
