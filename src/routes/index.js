@@ -35,6 +35,12 @@ router.put('/cows/:id', async(req, res, next) => {
     res.send(ret);
 })
 
+router.delete('/cows/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await cows.deleteCow(id);
+    res.send(ret);
+})
+
 
 //route species
 router.get('/species', async(req, res, next) =>{
