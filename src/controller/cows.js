@@ -18,7 +18,7 @@ cows.getAllCow = async()=>{
     return ret.message;
 }
 
-cows.getCow = async(id) =>{
+cows.getCowByID = async(id) =>{
     let ret = {}
         ret.message = "Can't get data"
 
@@ -39,7 +39,7 @@ cows.getCow = async(id) =>{
     return ret.message;
 }
 
-cows.addCow = async(json) =>{
+cows.addNewCow = async(json) =>{
     let ret = {}
         ret.message = "Cannot create new cow"
 
@@ -55,7 +55,7 @@ cows.addCow = async(json) =>{
     return ret.message;
  }
 
-cows.updateCow = async(id,json) => {
+cows.updateCowByID = async(id,json) => {
      let ret = {}
         ret.message = "Cannot update cow"
         const findCow = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)
@@ -79,7 +79,7 @@ cows.updateCow = async(id,json) => {
         return ret.message;
  }
 
-cows.deleteCow = async(id) => {
+cows.deleteCowByID = async(id) => {
     let ret = {}
         ret.message = "Cannot Delete cow"
         const findCow = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)

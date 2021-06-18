@@ -18,26 +18,26 @@ router.get('/cows', async(req, res, next) =>{
 
 router.get('/cows/:id', async(req, res, next) =>{
     const id = req.params.id;
-    const ret = await cows.getCow(id);
+    const ret = await cows.getCowByID(id);
     res.send(ret);
 });  
 
 router.post('/cows', async(req, res, next) =>{
     const json = req.body;
-    const ret = await cows.addCow(json);
+    const ret = await cows.addNewCow(json);
     res.send(ret);
 })
 
 router.put('/cows/:id', async(req, res, next) => {
     const id = req.params.id;
     const json = req.body;
-    const ret = await cows.updateCow(id,json);
+    const ret = await cows.updateCowByID(id,json);
     res.send(ret);
 })
 
 router.delete('/cows/:id', async(req, res, next) => {
     const id = req.params.id;
-    const ret = await cows.deleteCow(id);
+    const ret = await cows.deleteCowByID(id);
     res.send(ret);
 })
 
