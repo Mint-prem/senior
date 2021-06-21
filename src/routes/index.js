@@ -9,7 +9,7 @@ const species = require("../controller/species");
 const typecow = require("../controller/typecow");
 const userdairy = require("../controller/userdairy");
 const vaccine = require("../controller/vaccine");
-const vaccine_shedule = require("../controller/vaccine_shedule");
+const schedule = require("../controller/vaccine_shedule");
 
 const router = express.Router();
 
@@ -88,9 +88,34 @@ router.get('/vaccines/:id', async(req, res, next) =>{
     res.send(ret);
 })
 
-//route vaccine_shedule
-router.get('/shedule', async(req, res, next) =>{
-    const ret = await vaccine_shedule.getAllVaccineShedule();
+//route vaccine_schedule
+router.get('/schedule', async(req, res, next) =>{
+    const ret = await schedule.getAllSchedule();
+    res.send(ret);
+})
+
+router.get('/schedule/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await schedule.getScheduleByID(id);
+    res.send(ret);
+});  
+
+router.post('/schedule', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await schedule.addNewSchedule(json);
+    res.send(ret);
+})
+
+router.put('/schedule/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await schedule.updateScheduleByID(id,json);
+    res.send(ret);
+})
+
+router.delete('/schedule/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await schedule.deleteScheduleByID(id);
     res.send(ret);
 })
 
