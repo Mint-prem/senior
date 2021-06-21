@@ -55,9 +55,9 @@ abdominal.addNewAbdominal = async(json) =>{
 abdominal.updateAbdominalByID = async(id,json) => {
     let ret = {}
        ret.message = "Cannot update abdominal"
-       const findCow = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = ` + id)
+       const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = ` + id)
 
-       if(findCow.rows.length==0||null) {
+       if(findByID.rows.length==0||null) {
            ret.message = "Don't have abdominal ID " + id;
            return ret.message;
        } else {
@@ -79,9 +79,9 @@ abdominal.updateAbdominalByID = async(id,json) => {
 abdominal.deleteAbdominalByID = async(id) => {
     let ret = {}
         ret.message = "Cannot Delete Abdominal"
-        const findAbdominal = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = ` + id)
+        const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = ` + id)
 
-        if(findAbdominal.rows.length==0||null) {
+        if(findByID.rows.length==0||null) {
             ret.message = "Don't have Abdominal ID " + id;
             return ret.message;
         } else {
