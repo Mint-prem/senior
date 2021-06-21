@@ -44,7 +44,7 @@ userdairy.createNewUser = async(json) =>{
     ret.message = "Cannot create new account"
 
     try {
-        const newCow = await pool.query(`INSERT INTO userdiary (user_id, firstname, lastname, birthday, mobile, user_image, email, password) values ($1,$2,$3,$4,$5,$6,$7,$8)`, 
+        const ret = await pool.query(`INSERT INTO userdiary (user_id, firstname, lastname, birthday, mobile, user_image, email, password) values ($1,$2,$3,$4,$5,$6,$7,$8)`, 
         [json.user_id, json.firstname, json.lastname, json.birthday, json.mobile, json.user_image, json.email, json.password]);
         ret.message = "Account Created :)"
         console.log(ret.message);
@@ -59,9 +59,9 @@ userdairy.createNewUser = async(json) =>{
 userdairy.updateUserByID = async(id,json) => {
     let ret = {}
        ret.message = "Cannot update account user"
-       const findCow = await pool.query(`SELECT * FROM userdiary WHERE user_id = ` + id)
+       const findByID = await pool.query(`SELECT * FROM userdiary WHERE user_id = ` + id)
 
-       if(findCow.rows.length==0||null) {
+       if(findByID.rows.length==0||null) {
            ret.message = "Don't have Account user ID " + id;
            return ret.message;
        } else {
