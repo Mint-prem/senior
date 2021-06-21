@@ -2,10 +2,12 @@ const express = require("express");
 const { route } = require("../../server");
 const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
+const login = require("../controller/login");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
 const species = require("../controller/species");
 const typecow = require("../controller/typecow");
+const userdairy = require("../controller/userdairy");
 const vaccine = require("../controller/vaccine");
 const vaccine_shedule = require("../controller/vaccine_shedule");
 
@@ -67,10 +69,22 @@ router.get('/typecows', async(req, res, next) =>{
     res.send(ret);
 })
 
+router.get('/typecows/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await typecow.getTypecowByID(id);
+    res.send(ret);
+})
+
 
 //route vaccine
 router.get('/vaccines', async(req, res, next) =>{
     const ret = await vaccine.getAllVaccine();
+    res.send(ret);
+})
+
+router.get('/vaccines/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await vaccine.getVaccineByID(id);
     res.send(ret);
 })
 
@@ -86,9 +100,66 @@ router.get('/abdominal', async(req, res, next) =>{
     res.send(ret);
 })
 
+router.get('/abdominal/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await abdominal.getAbdominalByID(id);
+    res.send(ret);
+})
+
+router.post('/abdominal', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await abdominal.addNewAbdominal(json);
+    res.send(ret);
+})
+
+router.put('/abdominal/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await abdominal.updateAbdominalByID(id,json);
+    res.send(ret);
+})
+
+router.delete('/abdominal/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await abdominal.deleteAbdominalByID(id);
+    res.send(ret);
+})
+
 //route parturition
 router.get('/parturition', async(req, res, next) =>{
     const ret = await parturition.getAllParturition();
+    res.send(ret);
+})
+
+//route userdairy
+router.get('/user', async(req, res, next) => {
+    const ret = await userdairy.getAllUser();
+    res.send(ret);
+})
+
+router.get('/user/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await userdairy.getUserByID(id);
+    res.send(ret);
+})
+
+router.post('/register', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await userdairy.createNewUser(json);
+    res.send(ret);
+})
+
+router.put('/user/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await userdairy.updateUserByID(id,json);
+    res.send(ret);
+})
+
+//route login
+router.post('/login', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await login.authen(json);
     res.send(ret);
 })
 
