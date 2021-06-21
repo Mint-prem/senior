@@ -131,6 +131,31 @@ router.get('/parturition', async(req, res, next) =>{
     res.send(ret);
 })
 
+router.get('/parturition/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await parturition.getParturitionByID(id);
+    res.send(ret);
+})
+
+router.post('/parturition', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await parturition.addNewParturition(json);
+    res.send(ret);
+})
+
+router.put('/parturition/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await parturition.updateParturitionByID(id,json);
+    res.send(ret);
+})
+
+router.delete('/parturition/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await parturition.deleteParturitionByID(id);
+    res.send(ret);
+})
+
 //route userdairy
 router.get('/user', async(req, res, next) => {
     const ret = await userdairy.getAllUser();
