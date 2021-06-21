@@ -17,7 +17,7 @@ abdominal.getAllabdominal = async()=>{
 
 abdominal.getAbdominalByID = async(id) =>{
     let ret = {}
-        ret.message = "Can't get data"
+        ret.message = "Cannot get data"
 
     try {
         const ret = await pool.query("SELECT * FROM abdominal WHERE abdominal_id = $1", [id]);
@@ -40,8 +40,8 @@ abdominal.addNewAbdominal = async(json) =>{
         ret.message = "Cannot create new abdominal"
 
     try {
-        const ret = await pool.query(`INSERT INTO abdominal (round, ab_date, status, staff, dry_period, semen, note, cow_id, parturition_id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)`, 
-        [round, ab_date, status, staff, dry_period, semen, note, cow_id, parturition_id]);
+        const ret = await pool.query(`INSERT INTO abdominal (round, ab_date, ab_status, ab_caretaker, dry_period, semen_id, semen_name, note, cow_id, semen_specie) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, 
+        [json.round, json.ab_date, json.ab_status, json.ab_caretaker, json.dry_period, json.semen_id, json.semen_name, json.note, json.cow_id, json.semen_specie]);
         ret.message = "Abdominal Created :)"
         console.log(ret.message);
         return ret.message;
@@ -62,8 +62,8 @@ abdominal.updateAbdominalByID = async(id,json) => {
            return ret.message;
        } else {
            try {
-               const ret = await pool.query(`UPDATE abdominal SET round = $1, ab_date = $2, status = $3, staff = $4, dry_period = $5, semen = $6, note = $7, cow_id = $8, parturition_id = $9 WHERE abdominal_id = $10`, 
-               [round, ab_date, status, staff, dry_period, semen, note, cow_id, parturition_id, id]);
+               const ret = await pool.query(`UPDATE abdominal SET round = $1, ab_date = $2, ab_status = $3, ab_caretaker = $4, dry_period = $5, semen_id = $6, semen_name = $7, note = $8, cow_id = $9, semen_specie = $10 WHERE abdominal_id = $11`, 
+               [json.round, json.ab_date, json.ab_status, json.ab_caretaker, json.dry_period, json.semen_id, json.semen_name, json.note, json.cow_id, json.semen_specie, id]);
                ret.message = "Abdominal Updated :)"
                console.log(ret.message);
                return ret.message;
