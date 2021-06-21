@@ -4,7 +4,7 @@ const cows = {}
 
 cows.getAllCow = async()=>{
     let ret = {}
-        ret.message = "Can't get data"
+        ret.message = "Cannot get data"
 
     try {
         const ret = await pool.query(`SELECT * FROM cow`);
@@ -20,7 +20,7 @@ cows.getAllCow = async()=>{
 
 cows.getCowByID = async(id) =>{
     let ret = {}
-        ret.message = "Can't get data"
+        ret.message = "Cannot get data"
 
     try {
         const ret = await pool.query("SELECT * FROM cow WHERE cow_id = $1", [id]);
