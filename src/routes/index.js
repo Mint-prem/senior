@@ -6,6 +6,7 @@ const login = require("../controller/login");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
 const species = require("../controller/species");
+const statuscow = require("../controller/statuscow");
 const typecow = require("../controller/typecow");
 const userdairy = require("../controller/userdairy");
 const vaccine = require("../controller/vaccine");
@@ -54,6 +55,18 @@ router.get('/species', async(req, res, next) =>{
 router.get('/species/:id', async(req, res, next) =>{
     const id = req.params.id;
     const ret = await species.getSpeciesByID(id);
+    res.send({data: ret});
+})
+
+//route statuscow
+router.get('/statuscows', async(req, res, next) =>{
+    const ret = await statuscow.getAllStatusCow();
+    res.send({data: ret});
+})
+
+router.get('/statuscows/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await statuscow.getStatusCowByID(id);
     res.send({data: ret});
 })
 
