@@ -7,6 +7,7 @@ const login = require("../controller/login");
 const { getMilkByID, addNewMilk } = require("../controller/milk");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
+const role = require("../controller/role");
 const species = require("../controller/species");
 const statuscow = require("../controller/statuscow");
 const typecow = require("../controller/typecow");
@@ -282,6 +283,18 @@ router.put('/farms/:id', async(req, res, next) => {
 router.delete('/farms/:id', async(req, res, next) => {
     const id = req.params.id;
     const ret = await farm.deleteFarmByID(id);
+    res.send({data: ret});
+})
+
+//route role
+router.get('/roles', async(req, res, next) =>{
+    const ret = await role.getAllRole();
+    res.send({data: ret});
+})
+
+router.get('/roles/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await role.getRoleByID(id);
     res.send({data: ret});
 })
 
