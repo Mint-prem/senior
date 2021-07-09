@@ -3,6 +3,7 @@ const { route } = require("../../server");
 const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
 const login = require("../controller/login");
+const { getMilkByID, addNewMilk } = require("../controller/milk");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
 const species = require("../controller/species");
@@ -75,6 +76,32 @@ router.get('/milks', async(req, res, next) =>{
     const ret = await milk.getAllMilk();
     res.send({data: ret});
 })
+
+router.get('/milks/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await getMilkByID(id);
+    res.send(ret);
+});  
+
+router.post('/milks', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await addNewMilk(json);
+    res.send(ret);
+})
+
+router.put('/milks/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await milk.updateMilkByID(id,json);
+    res.send(ret);
+})
+
+router.delete('/milks/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await milk.deleteMilkByID(id);
+    res.send(ret);
+})
+
 
 //route typecow
 router.get('/typecows', async(req, res, next) =>{
