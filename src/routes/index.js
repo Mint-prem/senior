@@ -82,26 +82,26 @@ router.get('/milks', async(req, res, next) =>{
 router.get('/milks/:id', async(req, res, next) =>{
     const id = req.params.id;
     const ret = await getMilkByID(id);
-    res.send({data: ret});
+    res.send(ret);
 });  
 
 router.post('/milks', async(req, res, next) =>{
     const json = req.body;
     const ret = await addNewMilk(json);
-    res.send({data: ret});
+    res.send(ret);
 })
 
 router.put('/milks/:id', async(req, res, next) => {
     const id = req.params.id;
     const json = req.body;
     const ret = await milk.updateMilkByID(id,json);
-    res.send({data: ret});
+    res.send(ret);
 })
 
 router.delete('/milks/:id', async(req, res, next) => {
     const id = req.params.id;
     const ret = await milk.deleteMilkByID(id);
-    res.send({data: ret});
+    res.send(ret);
 })
 
 
