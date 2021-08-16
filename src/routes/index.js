@@ -4,6 +4,7 @@ const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
 const farm = require("../controller/farm");
 const login = require("../controller/login");
+const manage = require("../controller/manage");
 const { getMilkByID, addNewMilk } = require("../controller/milk");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
@@ -12,8 +13,10 @@ const species = require("../controller/species");
 const statuscow = require("../controller/statuscow");
 const typecow = require("../controller/typecow");
 const userdairy = require("../controller/userdairy");
+const request = require("../controller/user_request");
 const vaccine = require("../controller/vaccine");
 const schedule = require("../controller/vaccine_shedule");
+const worker = require("../controller/worker");
 
 const router = express.Router();
 
@@ -295,6 +298,62 @@ router.get('/roles', async(req, res, next) =>{
 router.get('/roles/:id', async(req, res, next) =>{
     const id = req.params.id;
     const ret = await role.getRoleByID(id);
+    res.send({data: ret});
+})
+
+//route worker
+router.get('/worker', async(req, res, next) =>{
+    const ret = await worker.getAllWorker();
+    res.send({data: ret});
+})
+
+router.get('/worker/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await worker.getWorkerByID(id);
+    res.send({data: ret});
+});  
+
+router.post('/worker', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await worker.addNewWorker(json);
+    res.send({data: ret});
+})
+
+router.put('/worker/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await worker.updateWorkerByID(id,json);
+    res.send({data: ret});
+})
+
+router.delete('/worker/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const json = req.body;
+    const ret = await worker.deleteWorkerByUserID(id,json);
+    res.send({data: ret});
+})
+
+//route manage
+router.get('/request', async(req, res, next) =>{
+    const ret = await request.getAllRequest();
+    res.send({data: ret});
+})
+
+router.get('/request/:farmID', async(req, res, next) =>{
+    const id = req.params.farmID;
+    const ret = await manage.getRequestByFarmID(id);
+    res.send({data: ret});
+})
+
+router.post('/request', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await request.addNewRequest(json);
+    res.send({data: ret});
+})
+
+router.post('/manage', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await manage.acceptRequestByUserID(json);
     res.send({data: ret});
 })
 
