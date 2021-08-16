@@ -23,7 +23,7 @@ worker.getWorkerByID = async(id) =>{
         ret.message = "Cannot get data"
 
     try {
-        const ret = await pool.query("SELECT * FROM worker WHERE worker_id = $1", [id]);
+        const ret = await pool.query("SELECT * FROM worker WHERE farm_id = $1", [id]);
         if(ret.rows.length!=0){
             ret.message ="Sussess :)"
             console.log(ret.message);
@@ -80,17 +80,17 @@ worker.updateWorkerByID = async(id,json) => {
         return ret.message;
 }
 
-worker.deleteWorkerByID = async(id) => {
+worker.deleteWorkerByUserID = async(id,json) => {
     let ret = {}
         ret.message = "Cannot Delete worker"
-        const findByID = await pool.query(`SELECT * FROM worker WHERE worker_id = ` + id)
+        const findByID = await pool.query(`SELECT * FROM worker WHERE user_id = ` + json.user_id)
 
         if(findByID.rows.length==0||null) {
-            ret.message = "Don't have worker ID " + id;
+            ret.message = "Don't have worker ID " + json.user_id;
             return ret.message;
         } else {
             try {
-                const ret = await pool.query(`DELETE FROM worker WHERE worker_id = $1`, [id]);
+                const ret = await pool.query(`DELETE FROM worker WHERE farm_id = $1 AND user_id = $2`, [id, json.user_id]);
                 ret.message = "Worker Deleted :)"
                 console.log(ret.message);
                 return ret.message;
