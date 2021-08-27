@@ -42,7 +42,7 @@ exports.signin = async (req, res) => {
           expiresIn: '120d' // 120 day
           //expiresIn: 86400 // 24 hours
         });
-        res.status(200).send({ accessToken: token })
+        res.status(200).send({data:{ token: token }})
 
       }
     }
