@@ -20,7 +20,20 @@ module.exports = function (app) {
         worker w on u.user_id = w.user_id join
         role r on w.user_id = r.role_id join
         farm f on w.farm_id = f.farm_id WHERE u.user_id = $1`, [req.user_id]);
-        res.send({ data: account.rows });
+        
+        if (account.rows.length == 0 || null) {
+          const user = await pool.query(`SELECT * FROM userdiary WHERE user_id = $1`, [req.user_id]);
+
+          if (user.rows.length == 0 || null) {
+            res.status(500).send({ message: "Account not found!!" });
+          } else {
+            res.send({ data: user.rows});
+          }
+
+        } else {
+          res.send({ data: account.rows });
+        }
+
       } catch (error) {
         console.log(error);
         res.send("An error occured");
