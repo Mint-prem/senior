@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(require('./src/routes/index.js'));
 require('./src/routes/auth')(app);
 require('./src/routes/user')(app);
+require('./src/routes/farm')(app);
 require("dotenv").config();
 
 app.get('/', (req, res) => res.send('Welcome to My Project'))

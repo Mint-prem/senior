@@ -2,7 +2,6 @@ const express = require("express");
 const { route } = require("../../server");
 const abdominal = require("../controller/abdominal");
 const cows = require("../controller/cows");
-const farm = require("../controller/farm");
 const login = require("../controller/login");
 const manage = require("../controller/manage");
 const { getMilkByID, addNewMilk } = require("../controller/milk");
@@ -259,35 +258,6 @@ router.post('/login', async(req, res, next) =>{
 })
 
 //route farm
-router.get('/farms', async(req, res, next) =>{
-    const ret = await farm.getAllFarm();
-    res.send({data: ret});
-})
-
-router.get('/farms/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await farm.getFarmByID(id);
-    res.send({data: ret});
-});  
-
-router.post('/farms', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await farm.addNewFarm(json);
-    res.send({data: ret});
-})
-
-router.put('/farms/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await farm.updateFarmByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/farms/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await farm.deleteFarmByID(id);
-    res.send({data: ret});
-})
 
 //route role
 router.get('/roles', async(req, res, next) =>{
