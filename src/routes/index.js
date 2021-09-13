@@ -20,35 +20,6 @@ const worker = require("../controller/worker");
 const router = express.Router();
 
 //route cow
-router.get('/cows', async(req, res, next) =>{
-    const ret = await cows.getAllCow();
-    res.send({data: ret});
-});  
-
-router.get('/cows/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await cows.getCowByID(id);
-    res.send({data: ret});
-});  
-
-router.post('/cows', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await cows.addNewCow(json);
-    res.send({data: ret});
-})
-
-router.put('/cows/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await cows.updateCowByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/cows/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await cows.deleteCowByID(id);
-    res.send({data: ret});
-})
 
 
 //route species

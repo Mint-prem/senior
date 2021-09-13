@@ -49,7 +49,7 @@ exports.addNewFarm = async (req, res) => {
     const district = req.body.district;
     const province = req.body.province;
     const postcode = req.body.postcode;
-    
+
     try {
         const d = new Date();
         var date_startwork = d.toISOString();
@@ -71,7 +71,7 @@ exports.addNewFarm = async (req, res) => {
 
         if (countF != checkF && countW != checkW) {
             res.status(200).send({ data: { message: "Farm Created" } });
-            console.log('pass')
+            console.log('Pass')
         } else if (account == check) {
             res.status(500).send({ message: "Cannot create farm" })
             console.log('Farm : ' + checkF + 'and Worker : ' + checkW + ' is Error')
@@ -80,6 +80,27 @@ exports.addNewFarm = async (req, res) => {
     } catch (err) {
         console.log(err.message)
         res.status(500).send({ message: err.message })
+    }
+}
+
+exports.checkFarm = async (req, res) => {
+    const user_id = req.body.user_id;
+
+    try {
+        const worker = await pool.query(`SELECT * FROM worker WHERE user_id = $1`, [user_id])
+
+        if (worker.rows.length == 0 || null) {
+            //doesn't have farm
+            res.status(200).send({ data: { message: "A" } })
+        } else {
+            console.log('Have farm')
+            res.status(200).send({ data: { message: "B" } })
+
+        }
+
+    } catch (error) {
+        res.status(500).send({ message: err })
+        console.log(err.message)
     }
 }
 
