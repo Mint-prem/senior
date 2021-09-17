@@ -275,14 +275,34 @@ router.delete('/worker/:id', async(req, res, next) => {
 })
 
 //route manage
-router.get('/request', async(req, res, next) =>{
-    const ret = await request.getAllRequest();
+router.get('/manage', async(req, res, next) =>{
+    const ret = await manage.getAllRequest();
     res.send({data: ret});
 })
 
-router.get('/request/:farmID', async(req, res, next) =>{
+router.get('/manage/:farmID', async(req, res, next) =>{
     const id = req.params.farmID;
     const ret = await manage.getRequestByFarmID(id);
+    res.send({data: ret});
+})
+
+router.post('/manage', async(req, res, next) =>{
+    const json = req.body;
+    const ret = await manage.acceptRequestByUserID(json);
+    res.send({data: ret});
+})
+
+router.delete('/manage/:farmid', async(req, res, next) => {
+    const id = req.params.farmid;
+    const json = req.body;
+    const ret = await manage.deleteRequestByUserID(id, json);
+    res.send({data: ret});
+})
+
+//request
+router.get('/request/:id', async(req, res, next) =>{
+    const id = req.params.id
+    const ret = await request.getRequestByUserID(id);
     res.send({data: ret});
 })
 
@@ -292,9 +312,9 @@ router.post('/request', async(req, res, next) =>{
     res.send({data: ret});
 })
 
-router.post('/manage', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await manage.acceptRequestByUserID(json);
+router.delete('/request/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const ret = await request.cancelRequestByUserID(id);
     res.send({data: ret});
 })
 
