@@ -3,17 +3,37 @@ const request = require("./user_request");
 
 const manage = {}
 
-manage.cancelRequestByUserID = async(id) => {
+manage.getAllRequest = async()=>{
     let ret = {}
-        ret.message = "Cannot cancel"
-        const findByID = await pool.query(`SELECT * FROM user_request WHERE user_id = $1` + id)
+        ret.message = "Cannot get data!!"
+    try {
+        const ret = await pool.query(`SELECT * FROM user_request`);
 
+        if(ret.rowCount == 0){
+            ret.message = "Don't have any request"
+            return ret.message;
+        }else{
+            ret.message = "Sussess :)"
+            console.log(ret.message);
+            console.log("Have " + ret.rowCount + " request")
+            return ret.rows;
+        }
+
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+manage.deleteRequestByUserID = async(id,json) => {
+    let ret = {}
+        ret.message = "Method Error"
+        const findByID = await pool.query(`SELECT * FROM user_request WHERE user_id = $1 AND farm_id = $2`,[json.user_id, id]);
         if(findByID.rows.length==0||null) {
-            ret.message = "Don't have user ID " + id;
+            ret.message = "Don't have any request in farm ID " + id;
             return ret.message;
         } else {
             try {
-                const ret = await pool.query(`DELETE FROM user_request WHERE user_id = $1`, [id]);
+                const ret = await pool.query(`DELETE FROM user_request WHERE user_id = $1 AND farm_id = $2`, [json.user_id, id]);
                 ret.message = "Request Deleted :)"
                 console.log(ret.message);
                 return ret.message;
@@ -39,7 +59,7 @@ manage.getRequestByFarmID = async(id) =>{
             console.log(ret.message);
             return ret.rows;
         } else {
-            ret.message =("Don't have farm ID " + id);
+            ret.message =("Don't have any request in farm ID " + id);
             return ret.message;
         }
     } catch (err) {
@@ -58,8 +78,8 @@ manage.acceptRequestByUserID = async(json) =>{
         return ret.message;
     } else {
         try {
-            const ret = await pool.query(`INSERT INTO worker (role_id, farm_id, user_id, date_startwork, date_endwork) values ($1,$2,$3,$4,$5)`,
-            [json.role_id, json.farm_id, json.user_id, json.date_startwork, json.date_endwork]);
+            const ret = await pool.query(`INSERT INTO worker (role_id, farm_id, user_id, date_startwork, date_endwork) values (2,$1,$2,$3,$4)`,
+            [json.farm_id, json.user_id, json.date_startwork, json.date_endwork]);
             ret.message = "Add to farm :)"
             console.log(ret.message);
 
@@ -69,7 +89,6 @@ manage.acceptRequestByUserID = async(json) =>{
                 const result = await request.cancelRequestByUserID(json.user_id);
                 result.message = "Request Deleted :)"
                 console.log(result.message);
-        
             }
             
             return ret.message
@@ -83,27 +102,6 @@ manage.acceptRequestByUserID = async(json) =>{
 
     return ret.message
 
-}
-
-manage.getRequestByUserID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
-
-    try {
-        const ret = await pool.query("SELECT * FROM user_request WHERE user_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
-        } else {
-            ret.message =("Don't have user ID " + id);
-            return ret.message;
-        }
-    } catch (err) {
-        console.error(err.message);
-    }
-    return ret.message;
 }
 
 module.exports = manage;
