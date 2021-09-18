@@ -8,9 +8,7 @@ const { getMilkByID, addNewMilk } = require("../controller/milk");
 const milk = require("../controller/milk");
 const parturition = require("../controller/parturition");
 const role = require("../controller/role");
-const species = require("../controller/species");
 const statuscow = require("../controller/statuscow");
-const typecow = require("../controller/typecow");
 const userdairy = require("../controller/userdairy");
 const request = require("../controller/user_request");
 const vaccine = require("../controller/vaccine");
@@ -18,21 +16,6 @@ const schedule = require("../controller/vaccine_shedule");
 const worker = require("../controller/worker");
 
 const router = express.Router();
-
-//route cow
-
-
-//route species
-router.get('/species', async(req, res, next) =>{
-    const ret = await species.getAllSpecies();
-    res.send({data: ret});
-})
-
-router.get('/species/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await species.getSpeciesByID(id);
-    res.send({data: ret});
-})
 
 //route statuscow
 router.get('/statuscows', async(req, res, next) =>{
@@ -77,32 +60,6 @@ router.delete('/milks/:id', async(req, res, next) => {
     res.send({data: ret});
 })
 
-
-//route typecow
-router.get('/typecows', async(req, res, next) =>{
-    const ret = await typecow.getAllTypecow();
-    res.send({data: ret});
-})
-
-router.get('/typecows/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await typecow.getTypecowByID(id);
-    res.send({data: ret});
-})
-
-
-//route vaccine
-router.get('/vaccines', async(req, res, next) =>{
-    const ret = await vaccine.getAllVaccine();
-    res.send({ data: ret });
-})
-
-router.get('/vaccines/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await vaccine.getVaccineByID(id);
-    res.send({data: ret});
-})
-
 //route vaccine_schedule
 router.get('/schedule', async(req, res, next) =>{
     const ret = await schedule.getAllSchedule();
@@ -140,7 +97,18 @@ router.get('/abdominal', async(req, res, next) =>{
     res.send({data: ret});
 })
 
+// router.get('/abdominal/:id', async(req, res, next) =>{
+//     const id = req.params.id;
+//     const ret = await abdominal.getAbdominalByFarmID(id);
+//     res.send({data: ret});
+// })
+
 router.get('/abdominal/:id', async(req, res, next) =>{
+    const id = req.params.id;
+    const ret = await abdominal.getAbdominalByFarmID(id);
+})
+
+router.get('/abdominal/cow/:id', async(req, res, next) =>{
     const id = req.params.id;
     const ret = await abdominal.getAbdominalByID(id);
     res.send({data: ret});
