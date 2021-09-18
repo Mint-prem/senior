@@ -1,42 +1,46 @@
 const pool = require(`../database/pool`);
 
-const species = {}
+exports.getAllSpecies=async(req, res)=>{
+    let message = "Method Error"
 
-species.getAllSpecies=async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
     try {
-        const ret = await pool.query(`SELECT * FROM species`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        const getAllSpecies = await pool.query(`SELECT * FROM species`);
+        message = "Sussess :)"
+        console.log(message);
+        res.status(200).send({ data: { count : getAllSpecies.rowCount, species: getAllSpecies.rows} })
     } catch (err) {
-        ret.message = "Error"
+        message = "Error"
         console.error(err.message);
     }
 
-    return ret.message;
+    res.status(500).send({data : { message : message } });
+
 }
 
-species.getSpeciesByID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getSpeciesByID = async(req, res) =>{
+    let id = req.body.species_id;
+    console.log(id)
+    let message = "Method Error";
+
+    if(id.length==0||null){
+        message = "Please Fill Species ID"
+        console.log(message)
+        res.status(500).send({data : { message : message } })
+    }
 
     try {
-        const ret = await pool.query("SELECT * FROM species WHERE species_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        const getSpeciesByID = await pool.query("SELECT * FROM species WHERE species_id = $1", [id]);
+        if(getSpeciesByID.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            res.status(200).send({ data: { species: getSpeciesByID.rows} })
         } else {
-            ret.message =("Don't have species ID " + id);
-            return ret.message;
+            message =("Don't have species ID " + id);
+            res.status(500).send({data : { message : message } });
         }
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    res.status(500).send({data : { message : message } });
 }
-
-module.exports = species;
