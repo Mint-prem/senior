@@ -1,39 +1,46 @@
 const pool = require(`../database/pool`);
 
-const vaccine = {}
+exports.getAllVaccine=async(req, res)=>{
+    let message = "Method Error"
 
-vaccine.getAllVaccine = async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
     try {
-        const ret = await pool.query(`SELECT * FROM vaccine`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        const getAllVaccine = await pool.query(`SELECT * FROM vaccine`);
+        message = "Sussess :)"
+        console.log(message);
+        res.status(200).send({ data: { count : getAllVaccine.rowCount, Vaccine: getAllVaccine.rows} })
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
+
+    res.status(500).send({data : { message : message } });
+
 }
 
-vaccine.getVaccineByID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getVaccineByID = async(req, res) =>{
+    let id = req.body.vaccine_id;
+    console.log(id)
+    let message = "Method Error";
+
+    if(id.length==0||null){
+        message = "Please Fill Vaccine ID"
+        console.log(message)
+        res.status(500).send({data : { message : message } })
+    }
 
     try {
-        const ret = await pool.query("SELECT * FROM vaccine WHERE vaccine_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        const getVaccineByID = await pool.query("SELECT * FROM vaccine WHERE vaccine_id = $1", [id]);
+        if(getVaccineByID.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            res.status(200).send({ data: { Vaccine: getVaccineByID.rows} })
         } else {
-            ret.message =("Don't have vaccine ID " + id);
-            return ret.message;
+            message =("Don't have Vaccine ID " + id);
+            res.status(500).send({data : { message : message } });
         }
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    res.status(500).send({data : { message : message } });
 }
-
-module.exports = vaccine;
