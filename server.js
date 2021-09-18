@@ -21,9 +21,18 @@ require('./src/routes/auth')(app);
 require('./src/routes/user')(app);
 require('./src/routes/farm')(app);
 require('./src/routes/cow')(app);
+require('./src/routes/typecow')(app);
+require('./src/routes/species')(app);
+require('./src/routes/vaccine')(app);
+
+
 require("dotenv").config();
 
-app.get('/', (req, res) => res.send('Welcome to My Project'))
+app.get('/', (req, res) =>{
+    console.log(res)
+    res.send('Welcome to My Project')
+
+}) 
 
 pool.connect();
 

@@ -1,39 +1,45 @@
 const pool = require(`../database/pool`);
 
-const typecow = {}
+exports.getAllTypecow = async (req, res) => {
+    let message = "Method Error";
 
-typecow.getAllTypecow = async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
     try {
-        const ret = await pool.query(`SELECT * FROM typecow`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        const getAllType = await pool.query(`SELECT * FROM typecow`);
+        message = "Sussess :)"
+        console.log(message);
+        res.status(200).send({ data: { typecow: getAllType.rows } })
     } catch (err) {
-        console.error(err.message);
+        message = "Error"
+        console.error(err)
     }
+
+    res.status(500).send({data : { message : message } });
 }
 
-typecow.getTypecowByID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getTypecowByID = async(req, res) => {
+    let id = req.body.typecow_id;
+    console.log(id)
+    let message = "Method Error";
+
+    if(id.length==0||null){
+        message = "Please Fill Typecow ID"
+        console.log(message)
+        res.status(500).send({data : { message : message } })
+    }
 
     try {
-        const ret = await pool.query("SELECT * FROM typecow WHERE typecow_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        const getTypeByID = await pool.query("SELECT * FROM typecow WHERE typecow_id = $1", [id]);
+        if(getTypeByID.rows.length!=0){
+            message = "Sussess :)"
+            console.log(message);
+            res.status(200).send({data : {typecow : getTypeByID.rows}})
         } else {
-            ret.message =("Don't have typecow ID " + id);
-            return ret.message;
+            message = "Don't have typecow ID : " + id;
+            res.status(500).send({data : { message : message } })
         }
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    res.status(500).send({data : { message : message } });
 }
-
-module.exports = typecow;
