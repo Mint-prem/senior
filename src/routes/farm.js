@@ -9,16 +9,18 @@ module.exports = function (app) {
         next();
     });
 
-    app.post("/createFarm", controller.addNewFarm);
+    app.post("/createFarm", controller.addNewFarm); //อย่าลืมเปลี่ยน path
 
-    app.post("/checkFarm", controller.checkFarm);
+    app.post("/checkFarm", controller.checkFarm); //อย่าลืมเปลี่ยน path
 
     app.get('/farms', controller.getAllFarm);
 
-    app.get('/farms/:id', controller.updateFarmByID);
+    app.get('/farms/id', controller.getFarmByID);
 
-    app.put('/farms/:id', controller.updateFarmByID);    
+    app.get('/farms/code', controller.getFarmByCode);
 
-    app.delete('/farms/:id', controller.deleteFarmByID);
+    app.put('/farms/edit', controller.updateFarm);    
+
+    app.delete('/farms/delete', controller.deleteFarm);
     
 };

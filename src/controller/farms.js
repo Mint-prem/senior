@@ -1,40 +1,79 @@
 const pool = require('../database/pool')
 
-exports.getAllFarm = async () => {
-    let ret = {}
-    ret.message = "Cannot get data"
+exports.getAllFarm = async (req, res) => {
 
     try {
-        const ret = await pool.query(`SELECT * FROM farm`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        let message = "Method Error"
+        const getAllFarm = await pool.query(`SELECT * FROM farm`);
+        message = "Sussess :)"
+        console.log(message);
+        res.status(200).send({ data: { count: getAllFarm.rowCount, rows: getAllFarm.rows } })
+
     } catch (err) {
-        ret.message = "Error"
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    res.status(500).send({ data: { message: message } });
 }
 
-exports.getFarmByID = async (id) => {
-    let ret = {}
-    ret.message = "Cannot get data"
+exports.getFarmByID = async (req, res) => {
 
     try {
-        const ret = await pool.query("SELECT * FROM farm WHERE farm_id = $1", [id]);
-        if (ret.rows.length != 0) {
-            ret.message = "Sussess :)"
-            console.log(ret.message);
-            return ret.rows;
+        let message = "Method Error"
+        let farm_id = req.body.farm_id
+
+        if (id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
+        }
+
+        const getFarm = await pool.query("SELECT * FROM farm WHERE farm_id = $1", [farm_id]);
+
+        if (getFarm.rows.length != 0) {
+            message = "Sussess :)"
+            console.log(message);
+            res.status(200).send({ data: { rows: getFarm.rows } })
         } else {
-            ret.message = ("Don't have farm ID " + id);
-            return ret.message;
+            message = ("Don't have farm ID " + farm_id);
+            res.status(500).send({ data: { message: message } });
         }
     } catch (err) {
-        ret.message = "Error";
+        message = "Error";
         console.error(err.message);
     }
-    return ret.message;
+    res.status(500).send({ data: { message: message } });
+}
+
+exports.getFarmByCode = async (req, res) => {
+
+    try {
+        let code = req.body.farm_code
+        message = "Method Error"
+
+        if (code.length == 0 || null) {
+            message = "Please Fill Farm Code"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
+        }
+
+        const findFarmByCode = await pool.query("SELECT * FROM farm WHERE farm_code = $1", [code]);
+
+        if (findFarmByCode.rows.length != 0) {
+            message = "Sussess :)"
+            console.log(message);
+            res.status(200).send({ data: { rows: findFarmByCode.rows } })
+        } else {
+            message = ("Don't have farm code : " + code);
+            res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+
+    res.status(500).send({ data: { message: message } })
 }
 
 exports.addNewFarm = async (req, res) => {
@@ -104,50 +143,146 @@ exports.checkFarm = async (req, res) => {
     }
 }
 
-exports.updateFarmByID = async (id, json) => {
-    let ret = {}
-    ret.message = "Cannot update farm"
-    const findByID = await pool.query(`SELECT * FROM farm WHERE farm_id = ` + id)
+exports.updateFarm = async (req, res) => {
 
-    if (findByID.rows.length == 0 || null) {
-        ret.message = "Don't have farm ID " + id;
-        return ret.message;
-    } else {
-        try {
-            const ret = await pool.query(`UPDATE farm SET farm_no = $1, farm_name = $2, farm_image = $3, address = $4, moo = $5, soi = $6, road = $7, sub_district = $8, district = $9, province = $10, postcode = $11 WHERE farm_id = $12`,
-                [json.farm_no, json.farm_name, json.farm_image, json.address, json.moo, json.soi, json.road, json.sub_district, json.district, json.province, json.postcode, id]);
-            ret.message = "Farm Updated :)"
-            console.log(ret.message);
-            return ret.message;
-        } catch (err) {
-            ret.message = "Error"
-            console.error(err.message);
+    try {
+        const farm_id = req.body.farm_id;
+        let farm_no = req.body.farm_no;
+        let farm_name = req.body.farm_name;
+        let farm_image = req.body.farm_image;
+        const farm_code = req.body.farm_code;
+        let address = req.body.address;
+        let moo = req.body.moo;
+        let soi = req.body.soi;
+        let road = req.body.road;
+        let sub_district = req.body.sub_district;
+        let district = req.body.district;
+        let province = req.body.province;
+        let postcode = req.body.postcode;
+        const user_id = req.body.user_id;
+
+        message = "Method Error"
+
+        //Fill Farm ID
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
         }
+
+        //Fill User ID
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
+        }
+
+        const findByID = await pool.query(`SELECT * FROM farm WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM worker WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+        //Check ID Farm
+        if (findByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            res.status(500).send({ message: message })
+
+            //Check Member in Farm
+        } else if (checkMember.rows.length == 0 || null) {
+            message = "You are not a member in this farm"
+            console.log(message)
+            res.status(500).send({ message: message })
+
+            //Check Permission in Farm
+        } else if (checkMember.rows[0].role_id == 1) {
+            const editFarm = await pool.query(`UPDATE farm SET farm_no = $1, farm_name = $2, farm_image = $3, farm_code = $4, address = $5, moo = $6, soi = $7, road = $8, sub_district = $9, district = $10, province = $11, postcode = $12 WHERE farm_id = $13`,
+                [farm_no, farm_name, farm_image, farm_code, address, moo, soi, road, sub_district, district, province, postcode, farm_id]);
+            const check = await pool.query(`SELECT * FROM farm WHERE farm_id = $1`, [farm_id])
+            message = "Farm Updated :)"
+            console.log(message);
+            res.status(200).send({ message: message, rows: check.rows })
+
+            //Don't have Permission
+        } else {
+            message = "You don't have permission to update!!"
+            console.log(message)
+            res.status(500).send({ message: message })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+        res.status(500).send({ message: message })
     }
 
-    return ret.message;
+    res.status(500).send({ message: message })
 }
 
-exports.deleteFarmByID = async (id) => {
-    let ret = {}
-    ret.message = "Cannot Farm cow"
-    const findByID = await pool.query(`SELECT * FROM farm WHERE farm_id = ` + id)
+exports.deleteFarm = async (req, res) => {
 
-    if (findByID.rows.length == 0 || null) {
-        ret.message = "Don't have farm ID " + id;
-        return ret.message;
-    } else {
-        try {
-            const ret = await pool.query(`DELETE FROM farm WHERE farm_id = $1`, [id]);
-            ret.message = "farm Deleted :)"
-            console.log(ret.message);
-            return ret.message;
-        } catch (err) {
-            ret.message = "Error"
-            console.error(err.message);
+    try {
+        let farm_id = req.body.farm_id
+        let user_id = req.body.user_id
+        message = "Method Error"
+
+        //Fill Farm ID
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
         }
+
+        //Fill User ID
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
+        }
+
+        console.log("Farm ID : " + farm_id)
+        console.log("User ID : " + user_id)
+
+        const findByID = await pool.query(`SELECT * FROM farm WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM userdairy WHERE user_id = $1`, [user_id])
+        const checkMember = await pool.query(`SELECT * FROM worker WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+        //Check ID Farm
+        if (findByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            res.status(500).send({ message: message })
+        }
+
+        //Check ID User
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            res.status(500).send({ message: message })
+        }
+
+        //Check Members in Farm
+        if (checkMember.rows.length == 0 || null) {
+            message = "You are not a member in this farm"
+            console.log(message)
+            res.status(500).send({ message: message })
+
+            //Check Permission in Farm
+        } else if (checkMember.rows[0].role_id == 1) {
+            const ret = await pool.query(`DELETE FROM farm WHERE farm_id = $1`, [farm_id]);
+            message = "Farm Deleted :)"
+            console.log(message);
+            res.status(200).send({ message: message })
+
+            //Don't have Permission
+        } else {
+            message = "You don't have permission to delete!!"
+            console.log(message)
+            res.status(500).send({ message: message })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
     }
 
-    return ret.message;
-
+    res.status(500).send({ message: message })
 }
