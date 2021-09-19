@@ -9,30 +9,49 @@ var bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
   // Save User to 
-  const user_id = req.body.user_id;
-  const firstname = req.body.firstname;
-  const lastname = req.body.lastname;
-  const birthday = req.body.birthday;
-  const mobile = req.body.mobile;
-  const user_image = req.body.user_image;
-  const email = req.body.email;
-  const password = req.body.password;
-  const check = await pool.query(`SELECT COUNT(email) FROM userdiary`);
-
   try {
-    const ret = await pool.query(`INSERT INTO userdiary (user_id, firstname, lastname, birthday, mobile, user_image, email, password) values ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [user_id, firstname, lastname, birthday, mobile, user_image, email, password]);
-    const account = await pool.query(`SELECT COUNT(email) FROM userdiary`)
-    
-    if (account != check) {
-      res.status(200).send({ data: { message: "Account Created"}});
-    } else if (account == check) {
-      res.status(500).send({message: "Cannot create new account"})
+
+    const user_id = req.body.user_id;
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const user_birthday = req.body.user_birthday;
+    const mobile = req.body.mobile;
+    const user_image = req.body.user_image;
+    const email = req.body.email;
+    const password = req.body.password;
+    const check = await pool.query(`SELECT COUNT(email) FROM users`);
+
+    message = "Method Error"
+    const checkEmail = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+
+    if (checkEmail.rows.length != 0) {
+      message = "Email already exist"
+      console.log(message)
+      res.status(500).send({ data: { message: message } })
+    }
+
+    const addUser = await pool.query(`INSERT INTO users (firstname, lastname, user_birthday, mobile, user_image, email, password) values ($1,$2,$3,$4,$5,$6,$7)`,
+      [firstname, lastname, user_birthday, mobile, user_image, email, password]);
+
+    const checkCreated = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+
+    if (checkCreated != 0) {
+      message = "Account Created :)"
+      console.log(message)
+      res.status(200).send({ data: { message: message, rows: checkCreated.rows } })
+    } else {
+      message = "Can't create new account"
+      console.log(message)
+      res.status(500).send({ data: { message: message } })
     }
 
   } catch (err) {
-    res.status(500).send({message: err.message })
+    message = "Error"
+    console.error(err.message);
   }
+
+  res.status(500).send({ data: { message: message } })
+
 };
 
 exports.signin = async (req, res) => {
@@ -41,13 +60,15 @@ exports.signin = async (req, res) => {
   const password = req.body.password;
 
   try {
-    const account = await pool.query(`SELECT * FROM userdiary WHERE email = $1`, [email])
+    const account = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
 
     if (account.rows.length == 0 || null) {
-      res.status(500).send({ message: "Account not found!!" })
+      message = "Account not found!!"
+      res.status(500).send({ data: { message: message } })
     } else {
       if (password != account.rows[0].password) {
-        res.status(500).send({ message: "Wrong Password" })
+        message = "Wrong Password"
+        res.status(500).send({ data: { message: message } })
       } else if (password == account.rows[0].password) {
         var token = jwt.sign({ user_id: account.rows[0].user_id }, config.secret, {
           expiresIn: '120d' // 120 day
@@ -59,8 +80,8 @@ exports.signin = async (req, res) => {
     }
 
   } catch (err) {
-    res.status(500).send({ message: err })
-    console.error(err)
+    message = "Error"
+    console.error(err.message);
   }
-
+  res.status(500).send({ data: { message: message } })
 };
