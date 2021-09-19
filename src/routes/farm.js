@@ -9,9 +9,9 @@ module.exports = function (app) {
         next();
     });
 
-    app.post("/createFarm", controller.addNewFarm); //อย่าลืมเปลี่ยน path
+    app.post('/farms/create', controller.addNewFarm);
 
-    app.post("/checkFarm", controller.checkFarm); //อย่าลืมเปลี่ยน path
+    app.post("/farms/check", controller.checkFarm);
 
     app.get('/farms', controller.getAllFarm);
 
