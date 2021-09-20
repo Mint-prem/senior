@@ -97,11 +97,6 @@ router.get('/abdominal', async(req, res, next) =>{
     res.send({data: ret});
 })
 
-// router.get('/abdominal/:id', async(req, res, next) =>{
-//     const id = req.params.id;
-//     const ret = await abdominal.getAbdominalByFarmID(id);
-//     res.send({data: ret});
-// })
 
 router.get('/abdominal/:id', async(req, res, next) =>{
     const id = req.params.id;
@@ -176,11 +171,6 @@ router.get('/user/:id', async(req, res, next) =>{
     res.send({data: ret});
 })
 
-router.post('/register', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await userdairy.createNewUser(json);
-    res.send({data: ret});
-})
 
 router.put('/user/:id', async(req, res, next) => {
     const id = req.params.id;
@@ -188,15 +178,6 @@ router.put('/user/:id', async(req, res, next) => {
     const ret = await userdairy.updateUserByID(id,json);
     res.send({data: ret});
 })
-
-//route login
-router.post('/login', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await login.authen(json);
-    res.send({data: ret});
-})
-
-//route farm
 
 //route role
 router.get('/roles', async(req, res, next) =>{
@@ -207,38 +188,6 @@ router.get('/roles', async(req, res, next) =>{
 router.get('/roles/:id', async(req, res, next) =>{
     const id = req.params.id;
     const ret = await role.getRoleByID(id);
-    res.send({data: ret});
-})
-
-//route worker
-router.get('/worker', async(req, res, next) =>{
-    const ret = await worker.getAllWorker();
-    res.send({data: ret});
-})
-
-router.get('/worker/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await worker.getWorkerByID(id);
-    res.send({data: ret});
-});  
-
-router.post('/worker', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await worker.addNewWorker(json);
-    res.send({data: ret});
-})
-
-router.put('/worker/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await worker.updateWorkerByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/worker/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await worker.deleteWorkerByUserID(id,json);
     res.send({data: ret});
 })
 

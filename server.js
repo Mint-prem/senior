@@ -24,6 +24,7 @@ require('./src/routes/cow')(app);
 require('./src/routes/typecow')(app);
 require('./src/routes/species')(app);
 require('./src/routes/vaccine')(app);
+require('./src/routes/worker')(app);
 
 
 require("dotenv").config();
