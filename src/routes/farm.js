@@ -15,9 +15,9 @@ module.exports = function (app) {
 
     app.get('/farms', controller.getAllFarm);
 
-    app.get('/farms/id', controller.getFarmByID);
+    app.post('/farms/id', controller.getFarmByID);
 
-    app.get('/farms/code', controller.getFarmByCode);
+    app.post('/farms/code', controller.getFarmByCode);
 
     app.put('/farms/edit', controller.updateFarm);    
 
