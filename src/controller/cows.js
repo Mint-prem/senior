@@ -1,120 +1,327 @@
 const pool = require('../database/pool');
 
-
 exports.getAllCow = async (req, res) => {
-    let ret = {}
-    ret.message = "Cannot get data"
 
     try {
-        const ret = await pool.query(`SELECT * FROM cow`);
-        res.status(200).send({ data: { cows: ret.rows } })
-        console.log(ret.message);
+        message = "Method Error"
+
+        const getAllCow = await pool.query(`SELECT * FROM cows`);
+        message = "Success :)"
+        console.log(message);
+        return res.status(200).send({ data: { count: getAllCow.rowCount, cows: getAllCow.rows } })
+
     } catch (err) {
-        ret.message = "Error"
+        message = "Error"
         console.error(err.message);
     }
+
+    return res.status(500).send({ data: { message: message } })
 }
 
-exports.getCowsByUser = async (req, res) => {
-    const farm_id = req.body.farm_id;
+exports.getCowsByFarm = async (req, res) => {
 
     try {
-        const cows = await pool.query(`SELECT * FROM cow WHERE farm_id = $1`, [farm_id])
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
 
-        if (cows.rows.length == 0 || null) {
-            res.status(200).send({ data: { message: "You don't have cow" } })
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         } else {
-            res.status(200).send({ data: { cows: cows.rows } })
+            const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+            if (checkfarm.rows.length == 0 || null) {
+                message = "Don't have Farm ID : " + farm_id
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            } else {
+                const getCowInFarm = await pool.query(`SELECT * FROM cows WHERE farm_id = $1`, [farm_id])
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { message: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { rows: getCowInFarm.rows } })
+                }
+            }
         }
 
-    } catch (error) {
-        res.status(500).send({ message: err })
+    } catch (err) {
+        message = "Error"
         console.error(err)
     }
+
+    return res.status(500).send({ message: message })
+
 }
 
-exports.getCowByID = async (id) => {
-    let ret = {}
-    ret.message = "Cannot get data"
+exports.getCowByID = async (req, res) => {
 
     try {
-        const ret = await pool.query("SELECT * FROM cow WHERE cow_id = $1", [id]);
-        if (ret.rows.length != 0) {
-            ret.message = "Sussess :)"
-            console.log(ret.message);
-            return ret.rows;
+        let cow_id = req.body.cow_id
+        message = "Method Error"
+
+        if (cow_id.length == 0 || null) {
+            message = "Please Fill Cow ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const getCow = await pool.query("SELECT * FROM cows WHERE cow_id = $1", [cow_id]);
+
+        if (getCow.rows.length != 0) {
+            message = "Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: getCow.rows } })
         } else {
-            ret.message = ("Don't have cow ID " + id);
-            return ret.message;
+            message = "Don't have Cow ID : " + cow_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         }
+
     } catch (err) {
-        ret.message = "Error";
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+
+    return res.status(500).send({ data: { message: message } })
 }
 
-exports.addNewCow = async (json) => {
-    let ret = {}
-    ret.message = "Cannot create new cow"
+exports.addNewCow = async (req, res) => {
 
     try {
-        const ret = await pool.query(`INSERT INTO cow (cow_no, cow_name, cow_birthday, cow_sex, cow_image1, cow_image2, cow_image3, note, typecow_id, species_id, farm_id, statuscow_id) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-            [json.cow_no, json.cow_name, json.cow_birthday, json.cow_sex, json.cow_image1, json.cow_image2, json.cow_image3, json.note, json.typecow_id, json.species_id, json.farm_id, json.statuscow_id]);
-        ret.message = "Cow Created :)"
-        console.log(ret.message);
-        return ret.message;
+
+        let cow_no = req.body.cow_no
+        let cow_name = req.body.cow_name
+        let cow_birthday = req.body.cow_birthday
+        let cow_sex = req.body.cow_sex
+        let semen_id = req.body.semen_id
+        let semen_specie = req.body.semen_specie
+        let mom_id = req.body.mom_id
+        let mom_specie = req.body.mom_specie
+        let cow_image = req.body.cow_image
+        let note = req.body.note
+        const type_id = req.body.type_id
+        const specie_id = req.body.specie_id
+        const farm_id = req.body.farm_id
+        let status_id = req.body.status_id
+        const user_id = req.body.user_id;
+        
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (cow_no.length == 0 || null) {
+            message = "Please Fill Cow No"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if (checkMember.rows.length != 0) {
+
+            const checkCowNoInFarm = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2`, [cow_no, farm_id])
+
+            if (checkCowNoInFarm.rows.length > 0) {
+                message = "Cow_No already exist in farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            } 
+
+            const addCow = await pool.query(`INSERT INTO cows (type_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+                [type_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note]);
+            message = "Cow Created :)"
+            console.log(message);
+
+            const checkNewCow = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2`, [cow_no, farm_id])
+            return res.status(200).send({ data: { message: message, rows: checkNewCow.rows } })
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ message: message })
+        }
     } catch (err) {
-        ret.message = "Error"
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    return res.status(500).send({ data: { message: message } })
 }
 
-exports.updateCowByID = async (id, json) => {
-    let ret = {}
-    ret.message = "Cannot update cow"
-    const findByID = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)
+exports.updateCowByID = async (req, res) => {
 
-    if (findByID.rows.length == 0 || null) {
-        ret.message = "Don't have cow ID " + id;
-        return ret.message;
-    } else {
-        try {
-            const ret = await pool.query(`UPDATE cow SET cow_no = $1, cow_name = $2, cow_birthday = $3, cow_sex = $4, cow_image1 = $5, cow_image2 = $6, cow_image3 = $7, note = $8, typecow_id = $9, species_id = $10, farm_id = $11, statuscow_id = $12 WHERE cow_id = $13`,
-                [json.cow_no, json.cow_name, json.cow_birthday, json.cow_sex, json.cow_image1, json.cow_image2, json.cow_image3, json.note, json.typecow_id, json.species_id, json.farm_id, json.statuscow_id, id]);
-            ret.message = "Cow Updated :)"
-            console.log(ret.message);
-            return ret.message;
-        } catch (err) {
-            ret.message = "Error"
-            console.error(err.message);
+    try {
+        const cow_id = req.body.cow_id
+        let cow_no = req.body.cow_no
+        let cow_name = req.body.cow_name
+        let cow_birthday = req.body.cow_birthday
+        let cow_sex = req.body.cow_sex
+        let cow_image1 = req.body.cow_image1
+        let cow_image2 = req.body.cow_image2
+        let cow_image3 = req.body.cow_image3
+        let note = req.body.note
+        const typecow_id = req.body.typecow_id
+        const species_id = req.body.species_id
+        const farm_id = req.body.farm_id
+        let statuscow_id = req.body.statuscow_id
+        const user_id = req.body.user_id;
+        message = "Method Error"
+
+        //Fill Farm ID
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         }
+
+        const checkCowNoInFarm = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2 AND cow_id <> $3`, [cow_no, farm_id, cow_id])
+
+        if (checkCowNoInFarm.rows.length > 0) {
+            message = "Cow_No already exist"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if (checkMember.rows.length != 0) {
+            const findCowInFarm = await pool.query(`SELECT * FROM cows WHERE cow_id = $1 AND farm_id = $2`, [cow_id, farm_id])
+
+            if (findCowInFarm.rows.length == 0 || null) {
+                message = "Don't found Cow ID: " + cow_id + " in Farm ID: " + farm_id;
+                console.log(message)
+                return res.status(500).send({ message: message })
+            } else {
+                const editCow = await pool.query(`UPDATE cows SET type_id = $1, specie_id = $2, farm_id = $3, status_id = $4, cow_no = $5, cow_name = $6, cow_birthday = $7, cow_sex = $8, semen_id = $9, semen_specie = $10, mom_id = $11, mom_specie = $12, cow_image = $13, note = $14 WHERE cow_id = $15`,
+                    [ype_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note, cow_id]);
+                message = "Cow Updated :)"
+                console.log(message);
+
+                const checkCow = await pool.query(`SELECT * FROM cows WHERE cow_id = $1`, [cow_id])
+                console.log(checkCow.rows)
+                return res.status(200).send({ data: { message: message, rows: checkCow.rows } })
+            }
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ message: message })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
     }
 
-    return ret.message;
+    return res.status(500).send({ data: { message: message } })
+
 }
 
-exports.deleteCowByID = async (id) => {
-    let ret = {}
-    ret.message = "Cannot Delete cow"
-    const findByID = await pool.query(`SELECT * FROM cow WHERE cow_id = ` + id)
+exports.deleteCowByID = async (req, res) => {
 
-    if (findByID.rows.length == 0 || null) {
-        ret.message = "Don't have cow ID " + id;
-        return ret.message;
-    } else {
-        try {
-            const ret = await pool.query(`DELETE FROM cow WHERE cow_id = $1`, [id]);
-            ret.message = "Cow Deleted :)"
-            console.log(ret.message);
-            return ret.message;
-        } catch (err) {
-            ret.message = "Error"
-            console.error(err.message);
+    try {
+        let cow_id = req.body.cow_id
+        let user_id = req.body.user_id
+        let farm_id = req.body.farm_id
+        message = "Method Error"
+
+        if (cow_id.length == 0 || null) {
+            message = "Please Fill Cow ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+        const checkCow= await pool.query(`SELECT * FROM cows WHERE cow_id = $1 AND farm_id = $2`, [cow_id, farm_id])
+
+
+        //Check ID User
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        } else if(checkCow.rows.length == 0 || null){
+            message = "Don't have cow ID: " + cow_id + " in farm ID: " + farm_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+
+        } else if (checkMember.rows.length != 0) {
+
+            if (checkMember.rows[0].role_id == 1) {
+                const findCowInFarm = await pool.query(`SELECT * FROM cows WHERE cow_id = $1 AND farm_id = $2`, [cow_id, farm_id])
+                if (findCowInFarm.rows.length == 0 || null) {
+                    message = "Don't found Cow ID: " + cow_id + " in Farm ID: " + farm_id;
+                    console.log(message)
+                    return res.status(500).send({ message: message })
+                } else {
+                    const deleteCow = await pool.query(`DELETE FROM cows WHERE cow_id = $1`, [cow_id]);
+                    message = "Cow Deleted :)"
+                    console.log(message);
+                    return res.status(200).send({ message: message })
+                }
+            } else {
+                message = "You don't have permission to delete!!"
+                console.log(message)
+                return res.status(500).send({ message: message })
+            }
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ message: message })
+        }
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
     }
 
-    return ret.message;
+    return res.status(500).send({ message: message })
 
 }

@@ -162,7 +162,7 @@ exports.addNewFarm = async (req, res) => {
             const checkOwnerAdded = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
 
                 if(checkOwnerAdded.rows.length!=0){
-                    message = "Farm Created & Member Added :)"
+                    message = "Farm Created & Owner Added :)"
                     console.log(message)
                     res.status(200).send({ data: { message: message, rows: checkNewFarm.rows, owner: checkOwnerAdded.rows } } );
                 } else {

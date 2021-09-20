@@ -9,16 +9,16 @@ module.exports = function (app) {
         next();
     });
 
-    app.post('/getCowsByUser', controller.getCowsByUser);
+    app.post('/farms/cow', controller.getCowsByFarm);
 
     app.get('/cows', controller.getAllCow);
 
-    app.get('/cows/:id', controller.getCowByID);
-    
-    app.post('/cows', controller.addNewCow);
-    
-    app.put('/cows/:id', controller.updateCowByID);
-    
-    app.delete('/cows/:id', controller.deleteCowByID);
-    
+    app.post('/cows/id', controller.getCowByID);
+
+    app.post('/cows/create', controller.addNewCow);
+
+    app.put('/cows/edit', controller.updateCowByID);
+
+    app.delete('/cows/delete', controller.deleteCowByID);
+
 };
