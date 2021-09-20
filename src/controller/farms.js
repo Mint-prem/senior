@@ -110,6 +110,14 @@ exports.addNewFarm = async (req, res) => {
             res.status(500).send({ data: { message: message } })
         }
 
+        const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if(checkHaveUser.rows.length==0){
+            message = "Don't have user ID: " + user_id
+            console.log(message)
+            res.status(500).send({ data: { message: message } })
+        }
+
         const checkUserHaveFarm = await pool.query(`SELECT * FROM workers WHERE user_id = $1`, [user_id]);
 
         if(checkUserHaveFarm.rows.length!=0){
