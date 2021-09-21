@@ -27,11 +27,16 @@ manage.getAllRequest = async()=>{
 manage.deleteRequestByUserID = async(id,json) => {
     let ret = {}
         ret.message = "Method Error"
+        const findRequest = await pool.query(`SELECT * FROM user_request WHERE farm_id = $1`,[id]);
         const findByID = await pool.query(`SELECT * FROM user_request WHERE user_id = $1 AND farm_id = $2`,[json.user_id, id]);
-        if(findByID.rows.length==0||null) {
+
+        if(findRequest.rows.length==0||null){
             ret.message = "Don't have any request in farm ID " + id;
             return ret.message;
-        } else {
+        }else if(findByID.rows.length==0||null){
+            ret.message = "Don't have request by user ID " + json.user_id;
+            return ret.message;
+        }else{
             try {
                 const ret = await pool.query(`DELETE FROM user_request WHERE user_id = $1 AND farm_id = $2`, [json.user_id, id]);
                 ret.message = "Request Deleted :)"
