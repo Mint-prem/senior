@@ -10,9 +10,9 @@ module.exports = function (app) {
     });
 
 
-    app.get('/allspecies', controller.getAllSpecies);
+    app.get('/species', controller.getAllSpecies);
 
-    app.get('/speciesbyid', controller.getSpeciesByID);
+    app.post('/species/id', controller.getSpeciesByID);
 
 // router.get('/species', async(req, res, next) =>{
 //     const ret = await species.getAllSpecies();

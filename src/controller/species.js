@@ -1,46 +1,47 @@
 const pool = require(`../database/pool`);
 
 exports.getAllSpecies=async(req, res)=>{
-    let message = "Method Error"
 
     try {
+        message = "Method Error"
         const getAllSpecies = await pool.query(`SELECT * FROM species`);
         message = "Sussess :)"
         console.log(message);
-        res.status(200).send({ data: { count : getAllSpecies.rowCount, species: getAllSpecies.rows} })
+        return res.status(200).send({ data: { rows: getAllSpecies.rows} })
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
 
-    res.status(500).send({data : { message : message } });
+    return res.status(500).send({data : { message : message } });
 
 }
 
 exports.getSpeciesByID = async(req, res) =>{
-    let id = req.body.species_id;
-    console.log(id)
-    let message = "Method Error";
-
-    if(id.length==0||null){
-        message = "Please Fill Species ID"
-        console.log(message)
-        res.status(500).send({data : { message : message } })
-    }
 
     try {
-        const getSpeciesByID = await pool.query("SELECT * FROM species WHERE species_id = $1", [id]);
+
+        let specie_id = req.body.specie_id;
+        let message = "Method Error";
+    
+        if(specie_id.length==0||null){
+            message = "Please Fill Species ID"
+            console.log(message)
+            return res.status(500).send({data : { message : message } })
+        }
+    
+        const getSpeciesByID = await pool.query("SELECT * FROM species WHERE specie_id = $1", [specie_id]);
         if(getSpeciesByID.rows.length!=0){
             message ="Sussess :)"
             console.log(message);
-            res.status(200).send({ data: { species: getSpeciesByID.rows} })
+            return res.status(200).send({ data: { rows: getSpeciesByID.rows} })
         } else {
-            message =("Don't have species ID " + id);
-            res.status(500).send({data : { message : message } });
+            message =("Don't have species ID " + specie_id);
+            return res.status(500).send({data : { message : message } });
         }
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
-    res.status(500).send({data : { message : message } });
+    return res.status(500).send({data : { message : message } });
 }
