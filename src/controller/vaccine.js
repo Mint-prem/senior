@@ -6,7 +6,7 @@ exports.getAllVaccine = async (req, res) => {
         const getAllVaccine = await pool.query(`SELECT * FROM vaccines`);
         message = "Sussess :)"
         console.log(message);
-        return res.status(200).send({ data: { count: getAllVaccine.rowCount, Vaccine: getAllVaccine.rows } })
+        return res.status(200).send({ data: { rows: getAllVaccine.rows } })
     } catch (err) {
         message = "Error"
         console.error(err.message);
