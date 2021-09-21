@@ -44,18 +44,33 @@ exports.getAbdominalByFarmID = async (req, res) => {
   try {
     const farm_id = req.body.farm_id
     message = "Method Error"
+
+    if (farm_id.length == 0 || null) {
+      message = "Please Fill Farm ID"
+      console.log(message)
+      return res.status(500).send({ data: { message: message } })
+    }
+
+    const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+
+    if (findFarmByID.rows.length == 0 || null) {
+      message = "Don't have farm ID " + farm_id;
+      console.log(message)
+      return res.status(500).send({ message: message })
+    }
+
     const getAbByFarmID = await pool.query(
       `SELECT * FROM abdominal
       INNER JOIN cows ON cows.cow_id = abdominal.cow_id
       WHERE cows.farm_id = $1`, [farm_id]
-      );
+    );
 
     if (getAbByID.rows.length != 0) {
       message = "Sussess :)"
       console.log(message);
-      return res.status(200).send({ data: { counts: getAbByFarmID.rowCount, rows: getAbByFarmID.rows } })
+      return res.status(200).send({ data: { rows: getAbByFarmID.rows } })
     } else {
-      message = ("Don't have Farm ID " + farm_id);
+      message = ("Don't have abdominal data in farm");
       return res.status(500).send({ data: { message: message } })
     }
   } catch (err) {
@@ -69,14 +84,23 @@ exports.getAbdominalByCowID = async (req, res) => {
   try {
     const cow_id = req.body.cow_id
     message = "Method Error"
+
+    const checkCow= await pool.query(`SELECT * FROM cows WHERE cow_id = $1`, [cow_id])
+
+    if(checkCow.rows.length == 0 || null){
+        message = "Don't have cow ID: " + cow_id;
+        console.log(message)
+        return res.status(500).send({ message: message })
+    }
+
     const getAbByCowID = await pool.query("SELECT * FROM abdominal WHERE cow_id = $1", [cow_id]);
     if (getAbByCowID.rows.length != 0) {
       message = "Sussess :)"
       console.log(message);
       return res.status(200).send({ data: { rows: getAbByCowID.rows } })
     } else {
-      message = "Don't have cow ID " + cow_id;
-      return res.status(500).send({ data: { message: message } })
+      message ="Cow id " + cow_id + " don't have abdominal data";
+      return res.status(200).send({ data: { message: message } })
     }
   } catch (err) {
     console.error(err.message);
@@ -105,7 +129,7 @@ exports.addNewAbdominal = async (req, res) => {
       [cow_id, round, ab_date, ab_status, ab_caretaker, dry_period, semen_id, semen_name, semen_specie, note]);
     const CheckAdd = await pool.query(`SELECT * FROM abdominal WHERE cow_id = $1 AND round = $2`, [cow_id, round])
 
-    if(CheckAdd.rows.length != 0){
+    if (CheckAdd.rows.length != 0) {
       message = "Abdominal Created :)"
       console.log(message)
       return res.status(200).send({ data: { rows: CheckAdd.rows } })

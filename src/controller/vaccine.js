@@ -3,7 +3,6 @@ const pool = require(`../database/pool`);
 exports.getAllVaccine = async (req, res) => {
 
     try {
-        message = "Method Error"
         const getAllVaccine = await pool.query(`SELECT * FROM vaccines`);
         message = "Sussess :)"
         console.log(message);
@@ -37,6 +36,7 @@ exports.getVaccineByID = async (req, res) => {
             return res.status(200).send({ data: { rows: getVaccineByID.rows } })
         } else {
             message = ("Don't have Vaccine ID " + vaccine_id);
+            console.log(message)
             return res.status(500).send({ data: { message: message } });
         }
     } catch (err) {
