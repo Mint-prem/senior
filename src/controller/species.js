@@ -3,7 +3,6 @@ const pool = require(`../database/pool`);
 exports.getAllSpecies=async(req, res)=>{
 
     try {
-        message = "Method Error"
         const getAllSpecies = await pool.query(`SELECT * FROM species`);
         message = "Sussess :)"
         console.log(message);

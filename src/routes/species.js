@@ -14,15 +14,4 @@ module.exports = function (app) {
 
     app.post('/species/id', controller.getSpeciesByID);
 
-// router.get('/species', async(req, res, next) =>{
-//     const ret = await species.getAllSpecies();
-//     res.send({data: ret});
-// })
-
-// router.get('/species/:id', async(req, res, next) =>{
-//     const id = req.params.id;
-//     const ret = await species.getSpeciesByID(id);
-//     res.send({data: ret});
-// })
-
 };
