@@ -35,7 +35,13 @@ exports.getCowsByFarm = async (req, res) => {
                 console.log(message)
                 return res.status(500).send({ data: { message: message } })
             } else {
-                const getCowInFarm = await pool.query(`SELECT * FROM cows WHERE farm_id = $1`, [farm_id])
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                    INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                    INNER JOIN species ON cows.specie_id = species.specie_id
+                    INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                    WHERE farm_id = $1`, [farm_id]
+                    )
 
                 if (getCowInFarm.rows.length == 0 || null) {
                     message = "Don't have cow in farm ID: " + farm_id
@@ -70,7 +76,13 @@ exports.getCowByID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         }
 
-        const getCow = await pool.query("SELECT * FROM cows WHERE cow_id = $1", [cow_id]);
+        const getCow = await pool.query(
+            `SELECT * FROM cows 
+            INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+            INNER JOIN species ON cows.specie_id = species.specie_id
+            INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+            WHERE cow_id = $1`, [cow_id]
+            );
 
         if (getCow.rows.length != 0) {
             message = "Sussess :)"
