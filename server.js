@@ -26,6 +26,7 @@ require('./src/routes/species')(app);
 require('./src/routes/vaccine')(app);
 require('./src/routes/worker')(app);
 require('./src/routes/abdominal')(app);
+require('./src/routes/statuscow')(app);
 
 
 

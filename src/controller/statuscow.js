@@ -1,42 +1,46 @@
 const pool = require(`../database/pool`);
 
-const statuscow = {}
+exports.getAllStatusCow=async(req, res)=>{
 
-statuscow.getAllStatusCow=async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
-    try {
-        const ret = await pool.query(`SELECT * FROM statuscow`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
-    } catch (err) {
-        ret.message = "Error"
-        console.error(err.message);
-    }
-
-    return ret.message;
+        try {
+            message = "Method Error";
+            const AllStatus = await pool.query(`SELECT * FROM cow_status`);
+            message = "Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { typecow: AllStatus.rows } })
+        } catch (err) {
+            message = "Error"
+            console.error(err)
+        }
+    
+        return res.status(500).send({data : { message : message } });
 }
 
-statuscow.getStatusCowByID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getStatusCowByID = async(req, res) =>{
 
     try {
-        const ret = await pool.query("SELECT * FROM statuscow WHERE statuscow_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        let status_id = req.body.status_id;
+        message = "Method Error";
+    
+        if(status_id.length==0||null){
+            message = "Please Fill Status ID"
+            console.log(message)
+            return res.status(500).send({data : { message : message } })
+        }
+
+        const StatusByID = await pool.query(`SELECT * FROM cow_status WHERE status_id = $1`, [status_id]);
+        if(StatusByID.rows.length!=0){
+            message = "Sussess :)"
+            console.log(message);
+            return res.status(200).send({data : {rows : StatusByID.rows}})
         } else {
-            ret.message =("Don't have statuscow ID " + id);
-            return ret.message;
+            message = "Don't have status ID : " + status_id;
+            console.log(message)
+            return res.status(500).send({data : { message : message } })
         }
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    return res.status(500).send({data : { message : message } });
 }
-
-module.exports = statuscow;
