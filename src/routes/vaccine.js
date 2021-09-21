@@ -9,9 +9,8 @@ module.exports = function (app) {
         next();
     });
 
+    app.get('/vaccines', controller.getAllVaccine);
 
-    app.get('/allvaccine', controller.getAllVaccine);
-
-    app.get('/vaccinebyid', controller.getVaccineByID);
+    app.post('/vaccines/id', controller.getVaccineByID);
 
 };
