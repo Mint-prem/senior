@@ -1,39 +1,47 @@
 const pool = require(`../database/pool`);
 
-const role = {}
+exports.getAllRole = async(req, res)=>{
 
-role.getAllRole = async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
     try {
-        const ret = await pool.query(`SELECT * FROM role`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        const AllRoles = await pool.query(`SELECT * FROM roles`);
+        message = "Sussess :)"
+        console.log(message);
+        return res.status(200).send({ data: { Vaccine: AllRoles.rows } })
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
+
+    return res.status(500).send({ data: { message: message } });
+
 }
 
-role.getRoleByID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getRoleByID = async(req, res) =>{
 
     try {
-        const ret = await pool.query("SELECT * FROM role WHERE typecow_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        const role_id = req.body.role_id
+        message = "Method Error"
+
+        if (role_id.length == 0 || null) {
+            message = "Please Fill Role ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const roleByID = await pool.query("SELECT * FROM roles WHERE role_id = $1", [role_id]);
+
+        if(roleByID.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: roleByID.rows } })
         } else {
-            ret.message =("Don't have role ID " + id);
-            return ret.message;
+
+            message =("Don't have role ID " + role_id);
+            console.log(message)
+            return res.status(500).send({ data: { message: message } });
         }
     } catch (err) {
         console.error(err.message);
     }
-    return ret.message;
+    return res.status(500).send({ data: { message: message } });
 }
-
-module.exports = role;

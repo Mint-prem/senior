@@ -27,6 +27,10 @@ require('./src/routes/vaccine')(app);
 require('./src/routes/worker')(app);
 require('./src/routes/abdominal')(app);
 require('./src/routes/statuscow')(app);
+require('./src/routes/parturition')(app);
+require('./src/routes/role')(app);
+
+
 
 
 
