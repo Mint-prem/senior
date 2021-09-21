@@ -13,7 +13,7 @@ module.exports = function (app) {
     //     controller.getAllTypecow(req,res);
     // })
 
-    app.get('/alltypecow', controller.getAllTypecow);
+    app.get('/typecow', controller.getAllTypecow);
 
-    app.get('/typecowbyid', controller.getTypecowByID);
+    app.post('/typecow/id', controller.getTypecowByID);
 };
