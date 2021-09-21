@@ -75,37 +75,6 @@ router.delete('/schedule/:id', async(req, res, next) => {
     res.send({data: ret});
 })
 
-//route parturition
-router.get('/parturition', async(req, res, next) =>{
-    const ret = await parturition.getAllParturition();
-    res.send({data: ret});
-})
-
-router.get('/parturition/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await parturition.getParturitionByID(id);
-    res.send({data: ret});
-})
-
-router.post('/parturition', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await parturition.addNewParturition(json);
-    res.send({data: ret});
-})
-
-router.put('/parturition/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await parturition.updateParturitionByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/parturition/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await parturition.deleteParturitionByID(id);
-    res.send({data: ret});
-})
-
 //route userdairy
 router.get('/user', async(req, res, next) => {
     const ret = await userdairy.getAllUser();
@@ -123,18 +92,6 @@ router.put('/user/:id', async(req, res, next) => {
     const id = req.params.id;
     const json = req.body;
     const ret = await userdairy.updateUserByID(id,json);
-    res.send({data: ret});
-})
-
-//route role
-router.get('/roles', async(req, res, next) =>{
-    const ret = await role.getAllRole();
-    res.send({data: ret});
-})
-
-router.get('/roles/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await role.getRoleByID(id);
     res.send({data: ret});
 })
 

@@ -1,49 +1,129 @@
 const pool = require(`../database/pool`);
 
-const parturition = {}
-
-parturition.getAllParturition = async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
+exports.getAllParturition = async(req, res)=>{
+        
     try {
-        const ret = await pool.query(`SELECT * FROM parturition`);
-        ret.message = "Sussess :)"
-        console.log(ret.message);
-        return ret.rows;
+        message = "Method Error"
+        const AllPartu = await pool.query(`SELECT * FROM parturition`);
+        message = "Sussess :)"
+        console.log(message);
+        return res.status(200).send({ data: { rows: AllPartu.rows } })
+
     } catch (err) {
         console.error(err.message);
     }
+    return res.status(500).send({ data: { message: message } })
 }
 
-parturition.getParturitionByID = async(id) =>{
-    let ret = {}
-        ret.message = "Cannot get data"
+exports.getParturitionByID = async(req, res) =>{
 
     try {
-        const ret = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.message);
-            return ret.rows;
+        const parturition_id = req.body.parturition_id
+        message = "Method Error"
+
+        if (parturition_id.length == 0 || null) {
+            message = "Please Fill Parturition ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const getPartu = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1", [parturition_id]);
+        if(getPartu.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: getPartu.rows } })
         } else {
-            ret.message =("Don't have parturition ID " + id);
-            return ret.message;
+            message =("Don't have parturition ID " + parturition_id);
+            console.log(message);
+            return res.status(500).send({ data: { message: message } })
         }
     } catch (err) {
-        ret.message = "Error";
+        message = "Error";
         console.error(err.message);
     }
-    return ret.message;
+    return res.status(500).send({ data: { message: message } })
 }
 
-parturition.addNewParturition = async(json) =>{
+exports.getParturitionByFarmID = async(req, res) =>{
+
+    try {
+        const farm_id = req.body.farm_id
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+
+        if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        }
+
+        const getPartuByFarm = await pool.query(
+            `SELECT * FROM parturition 
+            INNER JOIN cows ON cows.cow_id = parturition.cow_id
+            WHERE farm_id = $1`, [farm_id]);
+            
+        if(getPartuByFarm.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: getPartuByFarm.rows } })
+        } else {
+            message = "Don't have parturition data in farm";
+            console.log(message);
+            return res.status(200).send({ data: { message: message } })
+        }
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.getParturitionByCowID = async(req, res) =>{
+
+    try {
+        const cow_id = req.body.cow_id
+        message = "Method Error"
+
+        const checkCow= await pool.query(`SELECT * FROM cows WHERE cow_id = $1`, [cow_id])
+
+        if(checkCow.rows.length == 0 || null){
+            message = "Don't have cow ID: " + cow_id;
+            console.log(message)
+            return res.status(500).send({ message: message })
+        }
+
+        const getPartuByCow = await pool.query("SELECT * FROM parturition WHERE cow_id = $1", [cow_id]);
+        if(getPartuByCow.rows.length!=0){
+            message ="Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: getPartuByCow.rows } })
+        } else {
+            message ="Cow id " + cow_id + " don't have parturition data";
+            console.log(message);
+            return res.status(200).send({ data: { message: message } })
+        }
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.addNewParturition = async(json) =>{
     let ret = {}
         ret.message = "Cannot create new parturition"
 
     try {
         const ret = await pool.query(`INSERT INTO parturition (par_date, calf_name, calf_sex, note, per_caretaker, cow_id) values ($1,$2,$3,$4,$5,$6)`, 
         [json.par_date, json.calf_name, json.calf_sex, json.note, json.per_caretaker, json.cow_id]);
-        ret.message = "Parturition Created :)"
+        message = "Parturition Created :)"
         console.log(ret.message);
         return ret.message;
     } catch (err) {
@@ -53,7 +133,7 @@ parturition.addNewParturition = async(json) =>{
     return ret.message;
 }
 
-parturition.updateParturitionByID = async(id,json) => {
+exports.updateParturitionByID = async(id,json) => {
      let ret = {}
         ret.message = "Cannot update parturition"
         const findByID = await pool.query(`SELECT * FROM parturition WHERE parturition_id = ` + id)
@@ -77,7 +157,7 @@ parturition.updateParturitionByID = async(id,json) => {
         return ret.message;
 }
 
-parturition.deleteParturitionByID = async(id) => {
+exports.deleteParturitionByID = async(id) => {
     let ret = {}
         ret.message = "Cannot Delete parturition"
         const findByID = await pool.query(`SELECT * FROM parturition WHERE parturition_id = ` + id)
@@ -100,5 +180,3 @@ parturition.deleteParturitionByID = async(id) => {
         return ret.message;
 
 }
-
-module.exports = parturition;
