@@ -91,43 +91,6 @@ router.delete('/schedule/:id', async(req, res, next) => {
     res.send({data: ret});
 })
 
-//route abdominal
-router.get('/abdominal', async(req, res, next) =>{
-    const ret = await abdominal.getAllabdominal();
-    res.send({data: ret});
-})
-
-
-router.get('/abdominal/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await abdominal.getAbdominalByFarmID(id);
-})
-
-router.get('/abdominal/cow/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await abdominal.getAbdominalByID(id);
-    res.send({data: ret});
-})
-
-router.post('/abdominal', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await abdominal.addNewAbdominal(json);
-    res.send({data: ret});
-})
-
-router.put('/abdominal/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await abdominal.updateAbdominalByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/abdominal/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await abdominal.deleteAbdominalByID(id);
-    res.send({data: ret});
-})
-
 //route parturition
 router.get('/parturition', async(req, res, next) =>{
     const ret = await parturition.getAllParturition();
