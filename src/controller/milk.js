@@ -16,6 +16,58 @@ exports.getAllMilk = async (req, res) => {
 
 }
 
+exports.getAllMilkMonth = async (req, res) => {
+
+    try {
+        const AllMilk = await pool.query(`SELECT * FROM   
+        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
+        message = "Sussess :)"
+        console.log(message);
+        const countMilk = await pool.query(`SELECT total FROM   
+        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
+        console.log(countMilk.rows)
+        total = 0
+        cal = countMilk.rows
+        for (var i=0; i < countMilk.rows.length; i++ ) {
+            total += cal[i].total;
+        }
+        console.log(total)
+        return res.status(200).send({ data: { rows: AllMilk.rows, milk: total } })
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+
+    return res.status(500).send({ data: { message: message } });
+
+}
+
+exports.getAllMilkYear = async (req, res) => {
+
+    try {
+        const AllMilk = await pool.query(`SELECT * FROM   
+        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
+        message = "Sussess :)"
+        console.log(message);
+        const countMilk = await pool.query(`SELECT total FROM   
+        milks WHERE milk_date BETWEEN '2021-01-02' and '2021-09-27'`);
+        console.log(countMilk.rows)
+        total = 0
+        cal = countMilk.rows
+        for (var i=0; i < countMilk.rows.length; i++ ) {
+            total += cal[i].total;
+        }
+        console.log(total)
+        return res.status(200).send({ data: { rows: AllMilk.rows, milk: total } })
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+
+    return res.status(500).send({ data: { message: message } });
+
+}
+
 exports.getMilkByID = async (req, res) => {
 
     try {

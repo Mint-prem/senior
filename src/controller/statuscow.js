@@ -7,7 +7,7 @@ exports.getAllStatusCow=async(req, res)=>{
             const AllStatus = await pool.query(`SELECT * FROM cow_status`);
             message = "Sussess :)"
             console.log(message);
-            return res.status(200).send({ data: { typecow: AllStatus.rows } })
+            return res.status(200).send({ data: { status: AllStatus.rows } })
         } catch (err) {
             message = "Error"
             console.error(err)

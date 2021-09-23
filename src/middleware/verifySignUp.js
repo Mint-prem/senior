@@ -5,8 +5,8 @@ checkDuplicateEmail = async (req, res, next) => {
   const email = req.body.email;
 
   try {
-    const account = await pool.query(`SELECT * FROM userdiary WHERE email = $1`, [email])
-    const count = await pool.query(`SELECT COUNT(email) FROM userdiary`)
+    const account = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+    const count = await pool.query(`SELECT COUNT(email) FROM users`)
 
     if (account.rows.length == 0 || null) {
       const countUser = parseInt(count.rows[0].count)

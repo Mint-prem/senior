@@ -56,7 +56,6 @@ router.get('/user/:id', async(req, res, next) =>{
     res.send({data: ret});
 })
 
-
 router.put('/user/:id', async(req, res, next) => {
     const id = req.params.id;
     const json = req.body;

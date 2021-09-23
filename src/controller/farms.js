@@ -203,11 +203,16 @@ exports.checkFarm = async (req, res) => {
         if (worker.rows.length == 0) {
             message = "User Don't have Farm"
             console.log(message)
-            return res.status(200).send({ data: { message: "A" } })
+            return res.status(200).send({ data: { rows: "A" } })
         } else {
+            const account = await pool.query(`SELECT * FROM users u join
+        workers w on u.user_id = w.user_id join
+        roles r on w.user_id = r.role_id join
+        farms f on w.farm_id = f.farm_id WHERE u.user_id = $1`, [user_id]);
+
             message = "User have Farm"
             console.log(message)
-            return res.status(200).send({ data: { message: "B" } })
+            return res.status(200).send({ data: { rows: account.rows } })
         }
 
     } catch (err) {

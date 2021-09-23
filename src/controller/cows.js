@@ -18,6 +18,57 @@ exports.getAllCow = async (req, res) => {
     return res.status(500).send({ data: { message: message } })
 }
 
+exports.getCowsByUser = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        message = "Method Error"
+
+        const check = await pool.query(`SELECT * FROM workers w WHERE user_id = $1`, [user_id])
+        const farm_id = check.rows[0].farm_id;
+
+        if (check.rows.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+            
+            const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+            if (checkfarm.rows.length == 0 || null) {
+                message = "Don't have Farm ID : " + farm_id
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            } else {
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                    INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                    INNER JOIN species ON cows.specie_id = species.specie_id
+                    INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                    WHERE farm_id = $1`, [farm_id]
+                    )
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { rows: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { rows: getCowInFarm.rows } })
+                }
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+        return res.status(500).send({ message: err })
+    }
+
+    return res.status(500).send({ message: message })
+
+}
+
 exports.getCowsByFarm = async (req, res) => {
 
     try {
@@ -58,6 +109,7 @@ exports.getCowsByFarm = async (req, res) => {
     } catch (err) {
         message = "Error"
         console.error(err)
+        return res.status(500).send({ message: err })
     }
 
     return res.status(500).send({ message: message })

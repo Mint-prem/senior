@@ -9,6 +9,8 @@ module.exports = function (app) {
         next();
     });
 
+    app.post('/users/cow', controller.getCowsByUser);
+
     app.post('/farms/cow', controller.getCowsByFarm);
 
     app.get('/cows', controller.getAllCow);
