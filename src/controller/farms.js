@@ -31,9 +31,10 @@ exports.getFarmByID = async (req, res) => {
         const getFarm = await pool.query("SELECT * FROM farms WHERE farm_id = $1", [farm_id]);
 
         if (getFarm.rows.length != 0) {
+            const getCountCow = await pool.query('select count(cow_id) from cows where farm_id = $1', [farm_id])
             message = "Sussess :)"
             console.log(message);
-            return res.status(200).send({ data: { rows: getFarm.rows } })
+            return res.status(200).send({ data: { rows: getFarm.rows, cow: getCountCow.rows} })
         } else {
             message = ("Don't have farm ID " + farm_id);
             return res.status(500).send({ data: { message: message } });

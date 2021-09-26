@@ -7,15 +7,15 @@ manage.getAllRequest = async()=>{
     let ret = {}
         ret.message = "Cannot get data!!"
     try {
-        const ret = await pool.query(`SELECT * FROM user_request`);
+        const ret = await pool.query(`SELECT * FROM join_farm j join users u on u.user_id = j.user_id`);
 
-        if(ret.rowCount == 0){
+        if(ret.rows.length == 0){
             ret.message = "Don't have any request"
             return ret.message;
         }else{
             ret.message = "Sussess :)"
             console.log(ret.message);
-            console.log("Have " + ret.rowCount + " request")
+            console.log("Have " + ret.rows + " request")
             return ret.rows;
         }
 
