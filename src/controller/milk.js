@@ -28,7 +28,7 @@ exports.getAllMilkMonth = async (req, res) => {
         console.log(countMilk.rows)
         total = 0
         cal = countMilk.rows
-        for (var i=0; i < countMilk.rows.length; i++ ) {
+        for (var i = 0; i < countMilk.rows.length; i++) {
             total += cal[i].total;
         }
         console.log(total)
@@ -45,20 +45,31 @@ exports.getAllMilkMonth = async (req, res) => {
 exports.getAllMilkYear = async (req, res) => {
 
     try {
-        const AllMilk = await pool.query(`SELECT * FROM   
-        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
+        //ต้อง request farm id ด้วย
+
+        const getYear = await pool.query(`SELECT date_part('year', now()) AS "year";`)
+        const year = getYear.rows[0].year
+        console.log(year)
+
+
+        const countTotalMilk = await pool.query(
+            `SELECT SUM(total) AS "total"
+            FROM milks WHERE date_part('year', milk_date) = date_part('year', CURRENT_DATE)
+            GROUP BY (SELECT EXTRACT(YEAR FROM milk_date));`);
+        const total = countTotalMilk.rows[0].total;
+        console.log(total)
+
+        const getAllMilkbyMonthofYear = await pool.query(
+            `SELECT (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), COUNT(total)
+            FROM milks WHERE date_part('year', milk_date) = date_part('year', CURRENT_DATE)
+            GROUP BY (SELECT EXTRACT(MONTH FROM milk_date) AS "month");`);
+        console.log(getAllMilkbyMonthofYear.rows)
+
+
         message = "Sussess :)"
         console.log(message);
-        const countMilk = await pool.query(`SELECT total FROM   
-        milks WHERE milk_date BETWEEN '2021-01-02' and '2021-09-27'`);
-        console.log(countMilk.rows)
-        total = 0
-        cal = countMilk.rows
-        for (var i=0; i < countMilk.rows.length; i++ ) {
-            total += cal[i].total;
-        }
-        console.log(total)
-        return res.status(200).send({ data: { rows: AllMilk.rows, milk: total } })
+
+        return res.status(200).send({ data: {  year: year, total: total, rows: getAllMilkbyMonthofYear.rows} })
     } catch (err) {
         message = "Error"
         console.error(err.message);
