@@ -240,9 +240,7 @@ exports.updateCowByID = async (req, res) => {
         let cow_name = req.body.cow_name
         let cow_birthday = req.body.cow_birthday
         let cow_sex = req.body.cow_sex
-        let cow_image1 = req.body.cow_image1
-        let cow_image2 = req.body.cow_image2
-        let cow_image3 = req.body.cow_image3
+        let cow_image = req.body.cow_image
         let note = req.body.note
         const typecow_id = req.body.typecow_id
         const species_id = req.body.species_id
@@ -291,7 +289,7 @@ exports.updateCowByID = async (req, res) => {
                 return res.status(500).send({ message: message })
             } else {
                 const editCow = await pool.query(`UPDATE cows SET type_id = $1, specie_id = $2, farm_id = $3, status_id = $4, cow_no = $5, cow_name = $6, cow_birthday = $7, cow_sex = $8, semen_id = $9, semen_specie = $10, mom_id = $11, mom_specie = $12, cow_image = $13, note = $14 WHERE cow_id = $15`,
-                    [ype_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note, cow_id]);
+                    [type_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note, cow_id]);
                 message = "Cow Updated :)"
                 console.log(message);
 

@@ -5,7 +5,8 @@ exports.getAllabdominal = async (req, res) => {
   try {
     message = "Method Error"
 
-    const getAllAb = await pool.query(`SELECT * FROM abdominal`);
+    const getAllAb = await pool.query(`SELECT * FROM abdominal a join 
+    cows c on a.cow_id = c.cow_id`);
     message = "Sussess :)"
     console.log(message);
     return res.status(200).send({ data: { rows: getAllAb.rows } })
@@ -93,7 +94,7 @@ exports.getAbdominalByCowID = async (req, res) => {
         return res.status(500).send({ message: message })
     }
 
-    const getAbByCowID = await pool.query("SELECT * FROM abdominal WHERE cow_id = $1", [cow_id]);
+    const getAbByCowID = await pool.query("SELECT * FROM abdominal a join cows c on a.cow_id = c.cow_id WHERE cow_id = $1", [cow_id]);
     if (getAbByCowID.rows.length != 0) {
       message = "Sussess :)"
       console.log(message);

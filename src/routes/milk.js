@@ -21,7 +21,7 @@ module.exports = function (app) {
 
     //app.post('/cows/milks', controller.getMilkByCowID);
 
-    //app.post('/milks/create', controller.addNewMilk);
+    app.post('/milks/create', controller.addNewMilk);
 
     //app.put('/milks/edit', controller.updateMilkByID);
 

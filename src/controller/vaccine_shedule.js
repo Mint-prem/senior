@@ -7,7 +7,8 @@ schedule.getAllSchedule =async()=>{
         ret.message = "Cannot get data!!"
     try {
         const ret = await pool.query(`select * from vaccine_schedule vs join
-        vaccines v on v.vaccine_id = vs.vaccine_id`);
+        vaccines v on v.vaccine_id = vs.vaccine_id join
+        cows c on c.cow_id = vs.cow_id `);
         ret.message = "Sussess :)"
         console.log(ret.message);
         return ret.rows;

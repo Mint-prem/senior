@@ -205,13 +205,18 @@ exports.getMilkByFarmID = async (req, res) => {
 exports.addNewMilk = async (req, res) => {
 
     try {
+        const milk_liter_morn = req.body.milk_liter_morn
+        const milk_liter_even = req.body.milk_liter_even
+        const milk_date = req.body.milk_date
+        const total = req.body.total
+        const farm_id = req.body.farm_id
         message = "Cannot create new milk"
 
-        const addMilk = await pool.query(`INSERT INTO milk (milk_litermorn, milkliter_even, date_milk, total, farm_id) values ($1,$2,$3,$4,$5)`,
-            [json.milk_litermorn, json.milkliter_even, json.date_milk, json.total, json.farm_id]);
+        const addMilk = await pool.query(`INSERT INTO milks (farm_id, milk_liter_morn, milk_liter_even, milk_date, total) values ($1,$2,$3,$4,$5)`,
+            [farm_id, milk_liter_morn, milk_liter_even, milk_date, total]);
         message = "Milk Created :)"
-        console.log(ret.message);
-        return message;
+        console.log(message)
+        return res.status(200).send({ data: message});
     } catch (err) {
         message = "Error"
         console.error(err.message);
