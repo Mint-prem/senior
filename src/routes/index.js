@@ -13,37 +13,6 @@ const worker = require("../controller/worker");
 
 const router = express.Router();
 
-//route vaccine_schedule
-router.get('/schedule', async(req, res, next) =>{
-    const ret = await schedule.getAllSchedule();
-    res.send({data: ret});
-})
-
-router.get('/schedule/:id', async(req, res, next) =>{
-    const id = req.params.id;
-    const ret = await schedule.getScheduleByID(id);
-    res.send({data: ret});
-});  
-
-router.post('/schedule', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await schedule.addNewSchedule(json);
-    res.send({data: ret});
-})
-
-router.put('/schedule/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const json = req.body;
-    const ret = await schedule.updateScheduleByID(id,json);
-    res.send({data: ret});
-})
-
-router.delete('/schedule/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await schedule.deleteScheduleByID(id);
-    res.send({data: ret});
-})
-
 //route userdairy
 router.get('/user', async(req, res, next) => {
     const ret = await userdairy.getAllUser();
