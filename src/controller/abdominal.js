@@ -25,6 +25,20 @@ exports.getAbdominalByID = async (req, res) => {
         const user_id = req.body.user_id
         const farm_id = req.body.farm_id
 
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if(abdominal_id.length == 0){
+            message = "Please Fill Abdominal ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
@@ -39,6 +53,7 @@ exports.getAbdominalByID = async (req, res) => {
             console.log(message)
             return res.status(500).send({ message: message })
         } else if (checkMember.rows.length != 0) {
+            
             const getAbByID = await pool.query("SELECT * FROM abdominal WHERE abdominal_id = $1", [abdominal_id]);
             if (getAbByID.rows.length != 0) {
                 message = "Sussess :)"
