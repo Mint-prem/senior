@@ -17,6 +17,8 @@ module.exports = function (app) {
 
     app.post('/farms/id', controller.getFarmByID);
 
+    app.post(`/farms/users`, controller.getFarmByUserID);
+
     app.post('/farms/code', controller.getFarmByCode);
 
     app.put('/farms/edit', controller.updateFarm);    

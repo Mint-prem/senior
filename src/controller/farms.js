@@ -3,7 +3,6 @@ const pool = require('../database/pool')
 exports.getAllFarm = async (req, res) => {
 
     try {
-        message = "Method Error"
         const getAllFarm = await pool.query(`SELECT * FROM farms`);
         message = "Sussess :)"
         console.log(message);
@@ -19,8 +18,7 @@ exports.getAllFarm = async (req, res) => {
 exports.getFarmByID = async (req, res) => {
 
     try {
-        let message = "Method Error"
-        let farm_id = req.body.farm_id
+        const farm_id = req.body.farm_id
 
         if (farm_id.length == 0 || null) {
             message = "Please Fill Farm ID"
@@ -34,9 +32,51 @@ exports.getFarmByID = async (req, res) => {
             const getCountCow = await pool.query('select count(cow_id) from cows where farm_id = $1', [farm_id])
             message = "Sussess :)"
             console.log(message);
-            return res.status(200).send({ data: { rows: getFarm.rows, cow: getCountCow.rows} })
+            return res.status(200).send({ data: { rows: getFarm.rows, cow: getCountCow.rows } })
         } else {
             message = ("Don't have farm ID " + farm_id);
+            return res.status(500).send({ data: { message: message } });
+        }
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } });
+}
+
+exports.getFarmByUserID = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id
+
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkHaveUser.rows.length == 0) {
+            message = "Don't have user ID: " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const getWorker = await pool.query("SELECT * FROM workers WHERE user_id = $1", [user_id]);
+
+        if (getWorker.rows.length != 0) {
+            const farm_id = getWorker.rows[0].farm_id
+
+            const getFarm = await pool.query("SELECT * FROM farms WHERE farm_id = $1", [farm_id]);
+            const getCountCow = await pool.query('select count(cow_id) from cows where farm_id = $1', [farm_id])
+            message = "Sussess :)"
+            console.log(message);
+            return res.status(200).send({ data: { rows: getFarm.rows, cow: getCountCow.rows } })
+
+        } else {
+            message = ("User don't have farm");
             return res.status(500).send({ data: { message: message } });
         }
     } catch (err) {
@@ -109,19 +149,21 @@ exports.addNewFarm = async (req, res) => {
             message = "Please Fill Farm No"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        }
-
-        const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
-
-        if(checkHaveUser.rows.length==0){
-            message = "Don't have user ID: " + user_id
+        } else if (farm_code.length == 0 || null) {
+            message = "Please Fill Farm Code"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
 
+        const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const checkUserHaveFarm = await pool.query(`SELECT * FROM workers WHERE user_id = $1`, [user_id]);
 
-        if(checkUserHaveFarm.rows.length!=0){
+
+        if (checkHaveUser.rows.length == 0) {
+            message = "Don't have user ID: " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUserHaveFarm.rows.length != 0) {
             message = "User already have Farm!!"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
@@ -162,15 +204,15 @@ exports.addNewFarm = async (req, res) => {
 
             const checkOwnerAdded = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
 
-                if(checkOwnerAdded.rows.length!=0){
-                    message = "Farm Created & Owner Added :)"
-                    console.log(message)
-                    return res.status(200).send({ data: { message: message, rows: checkNewFarm.rows, owner: checkOwnerAdded.rows } } );
-                } else {
-                    message = "Error!!!! Farm Created But Can't Add Member"
-                    console.log(message)
-                    return res.status(500).send({ data: { message: message } })
-                }
+            if (checkOwnerAdded.rows.length != 0) {
+                message = "Farm Created & Owner Added :)"
+                console.log(message)
+                return res.status(200).send({ data: { message: message, rows: checkNewFarm.rows, owner: checkOwnerAdded.rows } });
+            } else {
+                message = "Error!!!! Farm Created But Can't Add Member"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
         }
 
     } catch (error) {
@@ -254,17 +296,16 @@ exports.updateFarm = async (req, res) => {
             message = "Please Fill User ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        }
-
-        const checkFarmNo = await pool.query(`SELECT * FROM farms WHERE farm_no = $1`, [farm_no])
-        const checkFarmCode = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
-
-        if (checkFarmNo.rows.length != 0) {
-            message = "Farm No Already Exist"
+        } else if (farm_code.length == 0 || null) {
+            message = "Please Fill Farm Code"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        }else if(checkFarmCode.rows.length != 0){
-            message = "Farm Code Already Exist"
+        } else if (farm_no.length == 0 || null) {
+            message = "Please Fill Farm No"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_no.length == 0 || null) {
+            message = "Please Fill Farm Name"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
@@ -283,14 +324,27 @@ exports.updateFarm = async (req, res) => {
             return res.status(500).send({ message: message })
 
         } else if (checkMember.rows.length != 0) {
-
             if (checkMember.rows[0].role_id == 1) {
+
+                const checkFarmNo = await pool.query(`SELECT * FROM farms WHERE farm_no = $1`, [farm_no])
+                const checkFarmCode = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
+
+                if (checkFarmNo.rows.length != 0) {
+                    message = "Farm No Already Exist"
+                    console.log(message)
+                    return res.status(500).send({ data: { message: message } })
+                } else if (checkFarmCode.rows.length != 0) {
+                    message = "Farm Code Already Exist"
+                    console.log(message)
+                    return res.status(500).send({ data: { message: message } })
+                }
+
                 const editFarm = await pool.query(`UPDATE farms SET farm_no = $1, farm_code = $2, farm_name = $3, farm_image = $4, address = $5, moo = $6, soi = $7, road = $8, sub_district = $9, district = $10, province = $11, postcode = $12 WHERE farm_id = $13`,
-                [farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode, farm_id]);
-            const check = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
-            message = "Farm Updated :)"
-            console.log(message);
-            return res.status(200).send({ message: message, rows: check.rows })
+                    [farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode, farm_id]);
+                const check = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+                message = "Farm Updated :)"
+                console.log(message);
+                return res.status(200).send({ message: message, rows: check.rows })
             } else {
                 message = "You don't have permission to update!!"
                 console.log(message)
@@ -316,30 +370,21 @@ exports.deleteFarm = async (req, res) => {
     try {
         let farm_id = req.body.farm_id
         let user_id = req.body.user_id
-        message = "Method Error"
 
-        //Fill Farm ID
         if (farm_id.length == 0 || null) {
             message = "Please Fill Farm ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        }
-
-        //Fill User ID
-        if (user_id.length == 0 || null) {
+        } else if (user_id.length == 0 || null) {
             message = "Please Fill User ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
 
-        console.log("Farm ID : " + farm_id)
-        console.log("User ID : " + user_id)
-
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
 
-        //Check ID Farm
         if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
