@@ -1,112 +1,228 @@
 const pool = require(`../database/pool`);
-const request = require("./user_request");
 
-const manage = {}
-
-manage.getAllRequest = async()=>{
-    let ret = {}
-        ret.message = "Cannot get data!!"
-    try {
-        const ret = await pool.query(`SELECT * FROM join_farm j join users u on u.user_id = j.user_id`);
-
-        if(ret.rows.length == 0){
-            ret.message = "Don't have any request"
-            return ret.message;
-        }else{
-            ret.message = "Sussess :)"
-            console.log(ret.message);
-            console.log("Have " + ret.rows + " request")
-            return ret.rows;
-        }
-
-    } catch (err) {
-        console.error(err.message);
-    }
-}
-
-manage.deleteRequestByUserID = async(id,json) => {
-    let ret = {}
-        ret.message = "Method Error"
-        const findRequest = await pool.query(`SELECT * FROM user_request WHERE farm_id = $1`,[id]);
-        const findByID = await pool.query(`SELECT * FROM user_request WHERE user_id = $1 AND farm_id = $2`,[json.user_id, id]);
-
-        if(findRequest.rows.length==0||null){
-            ret.message = "Don't have any request in farm ID " + id;
-            return ret.message;
-        }else if(findByID.rows.length==0||null){
-            ret.message = "Don't have request by user ID " + json.user_id;
-            return ret.message;
-        }else{
-            try {
-                const ret = await pool.query(`DELETE FROM user_request WHERE user_id = $1 AND farm_id = $2`, [json.user_id, id]);
-                ret.message = "Request Deleted :)"
-                console.log(ret.message);
-                return ret.message;
-            } catch (err) {
-                ret.message = "Error"
-                console.error(err.message);
-            }
-        }
-
-        return ret.message;
-
-}
-
-manage.getRequestByFarmID = async(id) =>{
-    let ret = {}
-    ret.message = "Can't get data"
+exports.getAllRequest = async (req, res) => {
 
     try {
-        const ret = await pool.query("SELECT * FROM user_request WHERE farm_id = $1", [id]);
-        if(ret.rows.length!=0){
-            ret.message ="Sussess :)"
-            console.log(ret.rows);
-            console.log(ret.message);
-            return ret.rows;
+        message = "Cannot get data!!"
+        const getAll = await pool.query(`SELECT * FROM join_farm j join users u on u.user_id = j.user_id`);
+
+        if (getAll.rows.length == 0) {
+            message = "Don't have any request"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         } else {
-            ret.message =("Don't have any request in farm ID " + id);
-            return ret.message;
+            message = "Sussess :)"
+            console.log(message);
+            console.log("Have " + getAll.rows.length + " request")
+            return res.status(200).send({ data: { rows: getAll.rows } })
         }
+
     } catch (err) {
+        message = "Error"
         console.error(err.message);
     }
-    return ret.message;
+    return res.status(500).send({ data: { message: message } })
 }
 
-manage.acceptRequestByUserID = async(json) =>{
-    let ret ={}
-    ret.message = "Can't get data"
-    const findByID = await pool.query(`SELECT * FROM user_request WHERE user_id = $1` , [json.user_id])
+exports.getRequestByFarmID = async (req, res) => {
 
-    if(findByID.rows.length==0||null) {
-        ret.message = "Don't have request user ID " + json.user_id;
-        return ret.message;
-    } else {
-        try {
-            const ret = await pool.query(`INSERT INTO worker (role_id, farm_id, user_id, date_startwork, date_endwork) values (2,$1,$2,$3,$4)`,
-            [json.farm_id, json.user_id, json.date_startwork, json.date_endwork]);
-            ret.message = "Add to farm :)"
-            console.log(ret.message);
+    try {
+        const user_id = req.body.user_id
+        const farm_id = req.body.farm_id
 
-            const check = await pool.query(`SELECT * FROM worker WHERE user_id = $1 AND farm_id = $2` , [json.user_id, json.farm_id])
-            console.log(check)
-            if(check.rows.length >= 1){
-                const result = await request.cancelRequestByUserID(json.user_id);
-                result.message = "Request Deleted :)"
-                console.log(result.message);
-            }
-            
-            return ret.message
-
-        } catch (err) {
-            ret.message = "Error"
-            console.error(err.message);
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
         }
 
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
+
+            if (checkMember.rows[0].role_id == 1) {
+                const getRequest = await pool.query("SELECT * FROM join_farm WHERE farm_id = $1", [farm_id]);
+                return res.status(200).send({ data: { rows: getRequest.rows } })
+
+            } else {
+                message = "You don't have permission!!"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
     }
-
-    return ret.message
-
+    return res.status(500).send({ data: { message: message } })
 }
 
-module.exports = manage;
+exports.acceptRequestByUserID = async (req, res) => {
+
+    try {
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
+        const join_id = req.body.join_id
+        message = "Method Error"
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (join_id.length == 0 || null) {
+            message = "Please Fill Join ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+        const findRequestByID = await pool.query(`SELECT * FROM join_farm WHERE join_id = $1 AND farm_id = $2`, [join_id, farm_id])
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findRequestByID.rows.length == 0 || null) {
+            message = "Don't have Request ID " + join_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+
+        } else if (checkMember.rows.length != 0) {
+
+            if (checkMember.rows[0].role_id == 1) {
+
+                if (findRequestByID.rows.length == 1) {
+                    const j_user_id = findRequestByID.rows[0].user_id
+
+                    const declineReq = await pool.query(`DELETE FROM join_farm WHERE join_id = $1`, [join_id]);
+                    message = "Request Deleted"
+                    console.log(message);
+
+                    const date = new Date();
+                    var startwork = date.toISOString();
+
+                    const addWorker = await pool.query(`INSERT INTO workers (role_id, farm_id, user_id, startwork) values (2,$1,$2,$3)`,
+                        [farm_id, j_user_id, startwork]);
+
+                    const checkWorker = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [j_user_id, farm_id])
+                    message += " and Add to farm :) ";
+                    console.log(message);
+                    return res.status(200).send({ data: { message: message, rows: checkWorker.rows } })
+                }
+
+            } else {
+                message = "You don't have permission!!"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.deleteRequestByUserID = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id
+        const farm_id = req.body.farm_id
+        const join_id = req.body.join_id
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (join_id.length == 0 || null) {
+            message = "Please Fill Join ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const findRequestByID = await pool.query(`SELECT * FROM join_farm WHERE join_id = $1 AND farm_id = $2`, [join_id, farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findRequestByID.rows.length == 0 || null) {
+            message = "Don't have Request ID " + join_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+
+        } else if (checkMember.rows.length != 0) {
+
+            if (checkMember.rows[0].role_id == 1) {
+                const delRequest = await pool.query(`DELETE FROM join_farm WHERE join_id = $1 AND farm_id = $2`, [join_id, farm_id]);
+                message = "Request Deleted :)"
+                console.log(message);
+                return res.status(200).send({ data: { message: message } })
+
+            } else {
+                message = "You don't have permission to delete!!"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        essage = "Error"
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}
