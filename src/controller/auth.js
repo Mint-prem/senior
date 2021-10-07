@@ -23,9 +23,15 @@ exports.signup = async (req, res) => {
 
     message = "Method Error"
     const checkEmail = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+    const checkmobile = await pool.query(`SELECT * FROM users WHERE mobile = $1`, [mobile])
+
 
     if (checkEmail.rows.length != 0) {
       message = "Email already exist"
+      console.log(message)
+      return res.status(500).send({ data: { message: message } })
+    } else if (checkmobile.rows.length != 0) {
+      message = "Phone number already exist"
       console.log(message)
       return res.status(500).send({ data: { message: message } })
     }
