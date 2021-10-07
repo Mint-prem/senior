@@ -19,7 +19,6 @@ exports.getAllVaccine = async (req, res) => {
 exports.getVaccineByID = async (req, res) => {
 
     try {
-
         let vaccine_id = req.body.vaccine_id;
         let message = "Method Error";
 
