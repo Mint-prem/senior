@@ -31,6 +31,8 @@ require('./src/routes/parturition')(app);
 require('./src/routes/role')(app);
 require('./src/routes/milk')(app);
 require('./src/routes/vac_schedule')(app);
+require('./src/routes/user_request')(app);
+
 
 
 

@@ -57,23 +57,4 @@ router.delete('/manage/:farmid', async(req, res, next) => {
     res.send({data: ret});
 })
 
-//request
-router.get('/request/:id', async(req, res, next) =>{
-    const id = req.params.id
-    const ret = await request.getRequestByUserID(id);
-    res.send({data: ret});
-})
-
-router.post('/request', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await request.addNewRequest(json);
-    res.send({data: ret});
-})
-
-router.delete('/request/:id', async(req, res, next) => {
-    const id = req.params.id;
-    const ret = await request.cancelRequestByUserID(id);
-    res.send({data: ret});
-})
-
 module.exports = router;
