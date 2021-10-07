@@ -32,29 +32,4 @@ router.put('/user/:id', async(req, res, next) => {
     res.send({data: ret});
 })
 
-//route manage
-router.get('/manage', async(req, res, next) =>{
-    const ret = await manage.getAllRequest();
-    res.send({data: ret});
-})
-
-router.get('/manage/:farmID', async(req, res, next) =>{
-    const id = req.params.farmID;
-    const ret = await manage.getRequestByFarmID(id);
-    res.send({data: ret});
-})
-
-router.post('/manage', async(req, res, next) =>{
-    const json = req.body;
-    const ret = await manage.acceptRequestByUserID(json);
-    res.send({data: ret});
-})
-
-router.delete('/manage/:farmid', async(req, res, next) => {
-    const id = req.params.farmid;
-    const json = req.body;
-    const ret = await manage.deleteRequestByUserID(id, json);
-    res.send({data: ret});
-})
-
 module.exports = router;
