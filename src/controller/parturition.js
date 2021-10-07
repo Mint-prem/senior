@@ -44,20 +44,20 @@ exports.getParturitionByID = async (req, res) => {
         if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
-            const getPartu = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1", [parturition_id]);
+            const getPartu = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1 AND farm_id = $2", [parturition_id, farm_id]);
             if (getPartu.rows.length != 0) {
                 message = "Sussess :)"
                 console.log(message);
                 return res.status(200).send({ data: { rows: getPartu.rows } })
             } else {
-                message = ("Don't have parturition ID " + parturition_id);
+                message = ("Don't have parturition ID " + parturition_id + " in farm ID " + farm_id);
                 console.log(message);
                 return res.status(500).send({ data: { message: message } })
             }
@@ -65,7 +65,7 @@ exports.getParturitionByID = async (req, res) => {
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
     } catch (err) {
         message = "Error";
@@ -98,11 +98,11 @@ exports.getParturitionByFarmID = async (req, res) => {
         if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
             const getPartuByFarm = await pool.query(
@@ -123,7 +123,7 @@ exports.getParturitionByFarmID = async (req, res) => {
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
     } catch (err) {
         message = "Error";
@@ -163,15 +163,15 @@ exports.getParturitionByCowID = async (req, res) => {
         if (checkCow.rows.length == 0 || null) {
             message = "Don't have cow ID: " + cow_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
             const getPartuByCow = await pool.query("SELECT * FROM parturition WHERE cow_id = $1", [cow_id]);
@@ -188,7 +188,7 @@ exports.getParturitionByCowID = async (req, res) => {
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
     } catch (err) {
         message = "Error";
@@ -232,15 +232,15 @@ exports.addNewParturition = async (req, res) => {
         if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkCow.rows.length == 0 || null) {
             message = "Don't have cow ID: " + cow_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
             const addPar = await pool.query(`INSERT INTO parturition (cow_id, par_date, calf_name, calf_sex, par_caretaker, note) values ($1,$2,$3,$4,$5,$6)`,
@@ -254,14 +254,14 @@ exports.addNewParturition = async (req, res) => {
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
 
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
-    return res.status(500).send({ message: message })
+    return res.status(500).send({ data: { message: message } })
 }
 
 exports.updateParturitionByID = async (req, res) => {
@@ -309,11 +309,11 @@ exports.updateParturitionByID = async (req, res) => {
         } else if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } if (checkMember.rows.length != 0) {
 
             const upDatePar = await pool.query(`UPDATE parturition SET cow_id = $1, par_date = $2, calf_name = $3, calf_sex = $4, par_caretaker = $5, note = $6 WHERE parturition_id = $7`,
@@ -327,7 +327,7 @@ exports.updateParturitionByID = async (req, res) => {
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
     } catch (err) {
         message = "Error"
@@ -370,28 +370,28 @@ exports.deleteParturitionByID = async (req, res) => {
         } else if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
             if (checkMember.rows[0].role_id == 1) {
-                const ret = await pool.query(`DELETE FROM parturition WHERE parturition_id = $1`, [parturition_id]);
+                const ret = await pool.query(`DELETE FROM parturition WHERE parturition_id = $1 AND farm_id = $2`, [parturition_id, farm_id]);
                 message = "Parturition Deleted :)"
                 console.log(message);
                 return res.status(200).send({ data: { message: message } })
             } else {
                 message = "You don't have permission to delete!!"
                 console.log(message)
-                return res.status(500).send({ message: message })
+                return res.status(500).send({ data: { message: message } })
             }
 
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
 
     } catch (err) {
