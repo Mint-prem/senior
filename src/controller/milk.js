@@ -45,17 +45,15 @@ exports.getAllMilkMonth = async (req, res) => {
 exports.getAllMilkYear = async (req, res) => {
 
     try {
-        const farm_id = req.body.farm_id
-        const user_id = req.body.user_id
-        const getYear = await pool.query(`SELECT date_part('year', now()) AS "year";`)
-        const getMonth = await pool.query(`SELECT date_part('month', now()) AS "month";`)
+        //ต้อง request farm id ด้วย
 
+        const getYear = await pool.query(`SELECT date_part('year', now()) AS "year";`)
         const year = getYear.rows[0].year
-        const month = getMonth.rows[0].month
+        console.log(year)
 
         const countTotalMilk = await pool.query(`SELECT total FROM milks WHERE date_part('year', milk_date) = date_part('year', CURRENT_DATE)`);
         const cal = countTotalMilk.rows;
-        var result = cal.reduce(function (_this, val) {
+        var result = cal.reduce(function(_this, val) {
             return _this + parseInt(val.total)
         }, 0);
 
@@ -65,27 +63,16 @@ exports.getAllMilkYear = async (req, res) => {
             GROUP BY (SELECT EXTRACT(MONTH FROM milk_date) AS "month");`);
         console.log(getAllMilkbyMonthofYear.rows)
 
-        if (checkUser.rows.length == 0 || null) {
-            message = "Don't have User ID " + user_id;
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (findFarmByID.rows.length == 0 || null) {
-            message = "Don't have farm ID " + farm_id;
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (checkMember.rows.length != 0) {
 
-            const countTotalMilk = await pool.query(
-                `SELECT SUM(total) AS "total"
-                FROM milks WHERE farm_id = $1 AND date_part('year', milk_date) = date_part('year', CURRENT_DATE)
-                GROUP BY (SELECT EXTRACT(YEAR FROM milk_date)), farm_id`, [farm_id]);
+        message = "Sussess :)"
+        console.log(message);
 
-            return res.status(200).send({ data: { year: year, total: result, rows: getAllMilkbyMonthofYear.rows } })
-        }
+        return res.status(200).send({ data: {  year: year, total: result, rows: getAllMilkbyMonthofYear.rows} })
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
+
     return res.status(500).send({ data: { message: message } });
 }
 
