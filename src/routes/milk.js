@@ -11,20 +11,18 @@ module.exports = function (app) {
 
     app.get('/milks', controller.getAllMilk);
 
-    app.get('/milks/month', controller.getAllMilkMonth);
+    app.post('/milks/month', controller.getAllMilkMonth);
     
-    app.get('/milks/year', controller.getAllMilkYear);
+    app.post('/milks/year', controller.getAllMilkYear);
 
     app.post('/milks/id', controller.getMilkByID);
 
     app.post('/farms/milks', controller.getMilkByFarmID);
 
-    //app.post('/cows/milks', controller.getMilkByCowID);
-
     app.post('/milks/create', controller.addNewMilk);
 
-    //app.put('/milks/edit', controller.updateMilkByID);
+    app.put('/milks/edit', controller.updateMilkByID);
 
-    //app.delete('/milks/delete', controller.deleteMilkByID);
+    app.delete('/milks/delete', controller.deleteMilkByID);
 
 };

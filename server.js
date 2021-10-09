@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-app.use(require('./src/routes/index.js'));
+//app.use(require('./src/routes/index.js'));
 require('./src/routes/auth')(app);
 require('./src/routes/user')(app);
 require('./src/routes/farm')(app);
@@ -33,6 +33,8 @@ require('./src/routes/milk')(app);
 require('./src/routes/vac_schedule')(app);
 require('./src/routes/user_request')(app);
 require('./src/routes/manage')(app);
+require('./src/routes/userdiary')(app);
+
 
 
 require("dotenv").config();

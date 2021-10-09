@@ -20,4 +20,6 @@ module.exports = function (app) {
     app.post("/register", controller.signup);
 
     app.post("/signin", controller.signin);
+
+    app.post("/hashPass", controller.checkHash)
 };
