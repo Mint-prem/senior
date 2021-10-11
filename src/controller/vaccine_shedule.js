@@ -73,6 +73,7 @@ exports.getScheduleByFarmID = async (req, res) => {
         const getScheByFarm = await pool.query(
             `SELECT * FROM vaccine_schedule vs 
             INNER JOIN cows c ON c.cow_id = vs.cow_id
+            INNER JOIN vaccines v ON v.vaccine_id = vs.vaccine_id
             WHERE c.farm_id = $1`, [farm_id]);
 
         if (getScheByFarm.rows.length != 0) {
@@ -111,7 +112,9 @@ exports.getScheduleByCowID = async (req, res) => {
             return res.status(500).send({ message: message })
         }
 
-        const getScheByCow = await pool.query(`SELECT * FROM vaccine_schedule WHERE cow_id = $1`, [cow_id]);
+        const getScheByCow = await pool.query(`SELECT * FROM vaccine_schedule vs
+        INNER JOIN vaccines v ON v.vaccine_id = vs.vaccine_id
+        INNER JOIN cows c ON vs.cow_id = c.cow_id WHERE vs.cow_id = $1`, [cow_id]);
 
         if (getScheByCow.rows.length != 0) {
             message = "Sussess :)"
@@ -228,7 +231,7 @@ exports.updateScheduleByID = async (req, res) => {
             const checkUpdate = await pool.query(`SELECT * FROM vaccine_schedule WHERE schedule_id = ` + schedule_id)
             message = "Schedule Updated :)"
             console.log(message);
-            return res.status(200).send({ message: message, rows: checkUpdate.rows })
+            return res.status(200).send({ data: { message: message, rows: checkUpdate.rows }})
         }
 
     } catch (err) {

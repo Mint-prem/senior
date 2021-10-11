@@ -186,7 +186,7 @@ exports.addNewFarm = async (req, res) => {
         var startwork = date.toISOString();
 
         const farm = await pool.query(`INSERT INTO farms (farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-            [farm_no, farm_code, farm_name, 1, address, moo, soi, road, sub_district, district, province, postcode]);
+            [farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode]);
         message = "Farm Created :)"
 
         const checkNewFarm = await pool.query(`SELECT * FROM farms WHERE farm_name = $1 AND farm_code = $2`, [farm_name, farm_code])
