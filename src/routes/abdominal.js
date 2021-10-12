@@ -17,6 +17,8 @@ module.exports = function (app) {
 
     app.post('/cows/abdominal', controller.getAbdominalByCowID);
 
+    app.post('/cows/abdominals', controller.getManyAbdominalByCowID);
+
     app.post('/abdominal/create', controller.addNewAbdominal);
 
     app.put('/abdominal/edit', controller.updateAbdominalByID);
