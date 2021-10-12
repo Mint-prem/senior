@@ -20,8 +20,8 @@ exports.getAllCow = async (req, res) => {
 exports.getCowByID = async (req, res) => {
 
     try {
-        let cow_id = req.body.cow_id
 
+        let cow_id = req.body.cow_id
         let user_id = req.body.user_id
         let farm_id = req.body.farm_id
 

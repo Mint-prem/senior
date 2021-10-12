@@ -18,13 +18,14 @@ exports.getAllFarm = async (req, res) => {
 exports.getFarmByID = async (req, res) => {
 
     try {
-        const farm_id = req.body.farm_id
 
-        if (farm_id.length == 0 || null) {
-            message = "Please Fill Farm ID"
+        if (req.body.farm_id.length == 0 || undefined) {
+            message = "Farm ID is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
+
+        const farm_id = req.body.farm_id
 
         const getFarm = await pool.query("SELECT * FROM farms WHERE farm_id = $1", [farm_id]);
 
@@ -47,14 +48,14 @@ exports.getFarmByID = async (req, res) => {
 exports.getFarmByUserID = async (req, res) => {
 
     try {
-        const user_id = req.body.user_id
 
-
-        if (user_id.length == 0 || null) {
-            message = "Please Fill User ID"
+        if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
+
+        const user_id = req.body.user_id
 
         const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
 
@@ -89,14 +90,15 @@ exports.getFarmByUserID = async (req, res) => {
 exports.getFarmByCode = async (req, res) => {
 
     try {
-        let farm_code = req.body.farm_code
-        message = "Method Error"
 
-        if (farm_code.length == 0 || null) {
-            message = "Please Fill Farm Code"
+        if (req.body.farm_code.length == 0 || undefined) {
+            message = "Farm code is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
+
+        let farm_code = req.body.farm_code
+        message = "Method Error"
 
         const findFarmByCode = await pool.query("SELECT * FROM farms WHERE farm_code = $1", [farm_code]);
 
@@ -121,6 +123,24 @@ exports.addNewFarm = async (req, res) => {
 
     try {
 
+        if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_no.length == 0 || undefined) {
+            message = "Farm no is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_name.length == 0 || undefined) {
+            message = "Farm name is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_code.length == 0 || undefined) {
+            message = "Farm code is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
         const user_id = req.body.user_id;
         let farm_name = req.body.farm_name;
         let farm_no = req.body.farm_no;
@@ -136,24 +156,6 @@ exports.addNewFarm = async (req, res) => {
         let farm_image = req.body.farm_image;
 
         message = "Method Error"
-
-        if (user_id.length == 0 || null) {
-            message = "Please Fill User ID"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_name.length == 0 || null) {
-            message = "Please Fill Farm Name"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_no.length == 0 || null) {
-            message = "Please Fill Farm No"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_code.length == 0 || null) {
-            message = "Please Fill Farm Code"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        }
 
         const checkHaveUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const checkUserHaveFarm = await pool.query(`SELECT * FROM workers WHERE user_id = $1`, [user_id]);
@@ -186,7 +188,7 @@ exports.addNewFarm = async (req, res) => {
         var startwork = date.toISOString();
 
         const farm = await pool.query(`INSERT INTO farms (farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-            [farm_no, farm_code, farm_name, 1, address, moo, soi, road, sub_district, district, province, postcode]);
+            [farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode]);
         message = "Farm Created :)"
 
         const checkNewFarm = await pool.query(`SELECT * FROM farms WHERE farm_name = $1 AND farm_code = $2`, [farm_name, farm_code])
@@ -219,20 +221,20 @@ exports.addNewFarm = async (req, res) => {
         message = "Error"
         console.log(error.message)
     }
-    return res.status(500).send({ message: message })
-
+    return res.status(500).send({ data: { message: message } })
 }
 
 exports.checkFarm = async (req, res) => {
 
     try {
-        const user_id = req.body.user_id;
 
-        if (user_id.length == 0 || null) {
-            message = "Please Fill User ID"
+        if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        }
+        } 
+
+        const user_id = req.body.user_id;
 
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         if (checkUser.rows.length == 0 || null) {
@@ -263,13 +265,36 @@ exports.checkFarm = async (req, res) => {
         console.log(err.message)
     }
 
-    return res.status(500).send({ message: message })
-
+    return res.status(500).send({ data: { message: message } })
 }
 
 exports.updateFarm = async (req, res) => {
 
     try {
+
+        if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_id.length == 0 || undefined) {
+            message = "Farm ID is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_no.length == 0 || undefined) {
+            message = "Farm no is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_name.length == 0 || undefined) {
+            message = "Farm name is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.farm_code.length == 0 || undefined) {
+            message = "Farm code is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        
         const farm_id = req.body.farm_id;
         let farm_no = req.body.farm_no;
         let farm_name = req.body.farm_name;
@@ -317,11 +342,11 @@ exports.updateFarm = async (req, res) => {
         if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
 
         } else if (checkMember.rows.length != 0) {
             if (checkMember.rows[0].role_id == 1) {
@@ -348,13 +373,13 @@ exports.updateFarm = async (req, res) => {
             } else {
                 message = "You don't have permission to update!!"
                 console.log(message)
-                return res.status(500).send({ message: message })
+                return res.status(500).send({ data: { message: message } })
             }
 
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
 
     } catch (err) {
@@ -362,24 +387,25 @@ exports.updateFarm = async (req, res) => {
         console.error(err.message);
     }
 
-    return res.status(500).send({ message: message })
+    return res.status(500).send({ data: { message: message } })
 }
 
 exports.deleteFarm = async (req, res) => {
 
     try {
-        let farm_id = req.body.farm_id
-        let user_id = req.body.user_id
 
-        if (farm_id.length == 0 || null) {
-            message = "Please Fill Farm ID"
+        if (req.body.farm_id.length == 0 || undefined) {
+            message = "Farm ID is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } else if (user_id.length == 0 || null) {
-            message = "Please Fill User ID"
+        } else if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
+
+        let farm_id = req.body.farm_id
+        let user_id = req.body.user_id
 
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
@@ -388,11 +414,11 @@ exports.deleteFarm = async (req, res) => {
         if (findFarmByID.rows.length == 0 || null) {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         } else if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
 
         } else if (checkMember.rows.length != 0) {
 
@@ -404,19 +430,18 @@ exports.deleteFarm = async (req, res) => {
             } else {
                 message = "You don't have permission to delete!!"
                 console.log(message)
-                return res.status(500).send({ message: message })
+                return res.status(500).send({ data: { message: message } })
             }
 
         } else {
             message = "You are not a member in this farm"
             console.log(message)
-            return res.status(500).send({ message: message })
+            return res.status(500).send({ data: { message: message } })
         }
 
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
-
-    return res.status(500).send({ message: message })
+    return res.status(500).send({ data: { message: message } })
 }
