@@ -293,7 +293,6 @@ exports.updateFarm = async (req, res) => {
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
-
         
         const farm_id = req.body.farm_id;
         let farm_no = req.body.farm_no;
@@ -311,29 +310,6 @@ exports.updateFarm = async (req, res) => {
         const user_id = req.body.user_id;
 
         message = "Method Error"
-
-        //Fill Farm ID
-        if (farm_id.length == 0 || null) {
-            message = "Please Fill Farm ID"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (user_id.length == 0 || null) {
-            message = "Please Fill User ID"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_code.length == 0 || null) {
-            message = "Please Fill Farm Code"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_no.length == 0 || null) {
-            message = "Please Fill Farm No"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        } else if (farm_no.length == 0 || null) {
-            message = "Please Fill Farm Name"
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
-        }
 
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
