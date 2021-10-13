@@ -106,8 +106,9 @@ exports.getParturitionByFarmID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             const getPartuByFarm = await pool.query(
-                `SELECT * FROM parturition 
-                INNER JOIN cows ON cows.cow_id = parturition.cow_id
+                `SELECT * FROM parturition p
+                INNER JOIN abdominal a ON a.abdominal_id = p.ab_id
+                INNER JOIN cows c ON a.cow_id = c.cow_id
                 WHERE farm_id = $1`, [farm_id]);
 
             if (getPartuByFarm.rows.length != 0) {
@@ -174,7 +175,10 @@ exports.getParturitionByCowID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
-            const getPartuByCow = await pool.query("SELECT * FROM parturition WHERE cow_id = $1", [cow_id]);
+            const getPartuByCow = await pool.query(
+                `SELECT * FROM parturition p 
+                INNER JOIN abdominal a ON a.abdominal_id = p.ab_id 
+                INNER JOIN cows c ON a.cow_id = c.cow_id WHERE c.cow_id = $1`, [cow_id]);
             if (getPartuByCow.rows.length != 0) {
                 message = "Sussess :)"
                 console.log(message);
@@ -200,18 +204,19 @@ exports.getParturitionByCowID = async (req, res) => {
 exports.addNewParturition = async (req, res) => {
 
     try {
-        const cow_id = req.body.cow_id
+        const ab_id = req.body.ab_id
         let par_date = req.body.par_date
         let calf_name = req.body.calf_name
         let calf_sex = req.body.calf_sex
         let par_caretaker = req.body.par_caretaker
+        let par_status = req.body.par_status
         let note = req.body.note
 
         const user_id = req.body.user_id;
         const farm_id = req.body.farm_id
 
-        if (cow_id.length == 0 || null) {
-            message = "Please Fill Cow ID"
+        if (ab_id.length == 0 || null) {
+            message = "Please Fill AB ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (farm_id.length == 0 || null) {
@@ -224,7 +229,7 @@ exports.addNewParturition = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         }
 
-        const checkCow = await pool.query(`SELECT * FROM cows WHERE cow_id = $1`, [cow_id])
+        const checkAb = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
@@ -237,16 +242,16 @@ exports.addNewParturition = async (req, res) => {
             message = "Don't have farm ID " + farm_id;
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } else if (checkCow.rows.length == 0 || null) {
-            message = "Don't have cow ID: " + cow_id;
+        } else if (checkAb.rows.length == 0 || null) {
+            message = "Don't have abdominal ID: " + abdominal_id;
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
-            const addPar = await pool.query(`INSERT INTO parturition (cow_id, par_date, calf_name, calf_sex, par_caretaker, note) values ($1,$2,$3,$4,$5,$6)`,
-                [cow_id, par_date, calf_name, calf_sex, par_caretaker, note]);
+            const addPar = await pool.query(`INSERT INTO parturition (ab_id, par_date, calf_name, calf_sex, par_caretaker, par_status, note) values ($1,$2,$3,$4,$5,$6,$7)`,
+                [ab_id, par_date, calf_name, calf_sex, par_caretaker, par_status, note]);
 
-            const checkAdd = await pool.query(`SELECT * FROM parturition WHERE cow_id = $1 AND par_date = $2 AND calf_name = $3 AND calf_sex = $4`, [cow_id, par_date, calf_name, calf_sex])
+            const checkAdd = await pool.query(`SELECT * FROM parturition WHERE ab_id = $1 AND par_date = $2 AND calf_name = $3 AND calf_sex = $4`, [ab_id, par_date, calf_name, calf_sex])
             message = "Parturition Created :)"
             console.log(message);
             return res.status(200).send({ message: message, rows: checkAdd.rows })
@@ -268,11 +273,12 @@ exports.updateParturitionByID = async (req, res) => {
 
     try {
         const parturition_id = req.body.parturition_id
-        const cow_id = req.body.cow_id
+        const ab_id = req.body.ab_id
         let par_date = req.body.par_date
         let calf_name = req.body.calf_name
         let calf_sex = req.body.calf_sex
         let par_caretaker = req.body.par_caretaker
+        let par_status = req.body.par_status
         let note = req.body.note
 
         const user_id = req.body.user_id;
@@ -284,8 +290,8 @@ exports.updateParturitionByID = async (req, res) => {
             message = "Please Fill Parturition ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } else if (cow_id.length == 0 || null) {
-            message = "Please Fill Cow ID"
+        } else if (ab_id.length == 0 || null) {
+            message = "Please Fill Ab ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (farm_id.length == 0 || null) {
@@ -316,8 +322,8 @@ exports.updateParturitionByID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         } if (checkMember.rows.length != 0) {
 
-            const upDatePar = await pool.query(`UPDATE parturition SET cow_id = $1, par_date = $2, calf_name = $3, calf_sex = $4, par_caretaker = $5, note = $6 WHERE parturition_id = $7`,
-                [cow_id, par_date, calf_name, calf_sex, par_caretaker, note, parturition_id]);
+            const upDatePar = await pool.query(`UPDATE parturition SET ab_id = $1, par_date = $2, calf_name = $3, calf_sex = $4, par_caretaker = $5, par_status = $6, note = $7 WHERE parturition_id = $8`,
+                [ab_id, par_date, calf_name, calf_sex, par_caretaker, par_status, note, parturition_id]);
 
             const checkUpdate = await pool.query(`SELECT * FROM parturition WHERE parturition_id = ` + parturition_id)
             message = "Parturition Updated :)"

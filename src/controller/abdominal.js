@@ -388,10 +388,10 @@ exports.addNewAbdominal = async (req, res) => {
         const ab_date = req.body.ab_date
         const ab_status = req.body.ab_status
         const ab_caretaker = req.body.ab_caretaker
-        const dry_period = req.body.dry_period
         const semen_id = req.body.semen_id
         const semen_name = req.body.semen_name
         const semen_specie = req.body.semen_specie
+        const ab_calf = req.body.ab_calf
         const note = req.body.note
 
         const user_id = req.body.user_id;
@@ -416,8 +416,8 @@ exports.addNewAbdominal = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
-            const AddNew = await pool.query(`INSERT INTO abdominal (cow_id, round, ab_date, ab_status, ab_caretaker, dry_period, semen_id, semen_name, semen_specie, note) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-                [cow_id, round, ab_date, ab_status, ab_caretaker, dry_period, semen_id, semen_name, semen_specie, note]);
+            const AddNew = await pool.query(`INSERT INTO abdominal (cow_id, round, ab_date, ab_status, ab_caretaker, semen_id, semen_name, semen_specie, ab_calf, note) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+                [cow_id, round, ab_date, ab_status, ab_caretaker, semen_id, semen_name, semen_specie, ab_calf, note]);
             const CheckAdd = await pool.query(`SELECT * FROM abdominal WHERE cow_id = $1 AND round = $2 ORDER BY abdominal_id DESC`, [cow_id, round])
             if (CheckAdd.rows.length != 0) {
                 message = "Abdominal Created :)"
@@ -466,10 +466,10 @@ exports.updateAbdominalByID = async (req, res) => {
         const ab_date = req.body.ab_date
         const ab_status = req.body.ab_status
         const ab_caretaker = req.body.ab_caretaker
-        const dry_period = req.body.dry_period
         const semen_id = req.body.semen_id
         const semen_name = req.body.semen_name
         const semen_specie = req.body.semen_specie
+        const ab_calf = req.body.ab_calf
         const note = req.body.note
 
         const user_id = req.body.user_id;
@@ -499,8 +499,8 @@ exports.updateAbdominalByID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
-            const ret = await pool.query(`UPDATE abdominal SET cow_id = $1, round = $2, ab_date = $3, ab_status = $4, ab_caretaker = $5, dry_period = $6, semen_id = $7, semen_name = $8, semen_specie = $9, note = $10 WHERE abdominal_id = $11`,
-                [cow_id, round, ab_date, ab_status, ab_caretaker, dry_period, semen_id, semen_name, semen_specie, note, abdominal_id]);
+            const ret = await pool.query(`UPDATE abdominal SET cow_id = $1, round = $2, ab_date = $3, ab_status = $4, ab_caretaker = $5, semen_id = $6, semen_name = $7, semen_specie = $8, ab_calf = $9, note = $10 WHERE abdominal_id = $11`,
+                [cow_id, round, ab_date, ab_status, ab_caretaker, semen_id, semen_name, semen_specie, ab_calf, note, abdominal_id]);
 
             const checkUpdate = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1 `, [abdominal_id])
 
