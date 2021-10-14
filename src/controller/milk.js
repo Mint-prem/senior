@@ -1,5 +1,6 @@
 const e = require("cors");
 const pool = require(`../database/pool`);
+const farm = require("../routes/farm");
 
 exports.getAllMilk = async (req, res) => {
 
@@ -20,20 +21,64 @@ exports.getAllMilk = async (req, res) => {
 exports.getAllMilkMonth = async (req, res) => {
 
     try {
-        const AllMilk = await pool.query(`SELECT * FROM   
-        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
-        message = "Sussess :)"
-        console.log(message);
-        const countMilk = await pool.query(`SELECT total FROM   
-        milks WHERE milk_date BETWEEN '2021-09-02' and '2021-09-30'`);
-        console.log(countMilk.rows)
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
+        const getYear = await pool.query(`SELECT date_part('year', now()) AS "year";`)
+        const getMonth = await pool.query(`SELECT date_part('month', now()) AS "month";`)
 
-        cal = countMilk.rows
-        var result = cal.reduce(function (_this, val) {
-            return _this + parseInt(val.total)
-        }, 0);
-        console.log(result)
-        return res.status(200).send({ data: { rows: AllMilk.rows, milk: result } })
+        const year = getYear.rows[0].year
+        const month = getMonth.rows[0].month
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
+
+            const AllMilk = await pool.query(
+                `SELECT * FROM milks 
+                    WHERE farm_id = $1 
+                    AND milk_date BETWEEN (SELECT date_trunc('month', current_date)) AND CURRENT_DATE`, [farm_id]);
+            message = "Sussess :)"
+            console.log(message);
+
+            const countTotalMilk = await pool.query(
+                `SELECT SUM(total) AS total FROM  milks  
+                    WHERE farm_id = $1 AND milk_date BETWEEN (SELECT date_trunc('month', current_date)) AND CURRENT_DATE`, [farm_id]);
+
+            if (countTotalMilk.rows.length == 0) {
+                total = 0;
+            } else {
+                total = countTotalMilk.rows[0].total
+                console.log("total : " + total)
+            }
+            return res.status(200).send({ data: { total: total, rows: AllMilk.rows} })
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
     } catch (err) {
         message = "Error"
         console.error(err.message);
@@ -44,37 +89,92 @@ exports.getAllMilkMonth = async (req, res) => {
 
 exports.getAllMilkYear = async (req, res) => {
 
+
     try {
-        //ต้อง request farm id ด้วย
-
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
         const getYear = await pool.query(`SELECT date_part('year', now()) AS "year";`)
+        const getMonth = await pool.query(`SELECT date_part('month', now()) AS "month";`)
+
         const year = getYear.rows[0].year
-        console.log(year)
+        const month = getMonth.rows[0].month
 
-        const countTotalMilk = await pool.query(`SELECT total FROM milks WHERE date_part('year', milk_date) = date_part('year', CURRENT_DATE)`);
-        const cal = countTotalMilk.rows;
-        var result = cal.reduce(function(_this, val) {
-            return _this + parseInt(val.total)
-        }, 0);
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
 
-        const getAllMilkbyMonthofYear = await pool.query(
-            `SELECT (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), COUNT(total)
-            FROM milks WHERE date_part('year', milk_date) = date_part('year', CURRENT_DATE)
-            GROUP BY (SELECT EXTRACT(MONTH FROM milk_date) AS "month");`);
-        console.log(getAllMilkbyMonthofYear.rows)
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
 
 
-        message = "Sussess :)"
-        console.log(message);
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
 
-        return res.status(200).send({ data: {  year: year, total: result, rows: getAllMilkbyMonthofYear.rows} })
+            const countTotalMilk = await pool.query(
+                `SELECT SUM(total) AS "total"
+                FROM milks WHERE farm_id = $1 AND date_part('year', milk_date) = date_part('year', CURRENT_DATE)
+                GROUP BY (SELECT EXTRACT(YEAR FROM milk_date)), farm_id`, [farm_id]);
+
+            if (countTotalMilk.rows.length == 0) {
+                total = 0;
+            } else {
+                total = countTotalMilk.rows[0].total
+                console.log("total : " + total)
+            }
+
+            rows = []
+
+            for (let i = 0; i < month; i++) {
+                rows[i] = { month: i + 1, sum: 0 }
+            }
+
+            const getAllMilkbyMonthofYear = await pool.query(
+                `SELECT (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), SUM(total)
+                    FROM milks WHERE farm_id = $1 AND date_part('year', milk_date) = date_part('year', CURRENT_DATE)
+                    GROUP BY (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), farm_id;`, [farm_id]);
+
+            getAllMilkbyMonthofYear.rows.forEach((member, index) => {
+                console.log("In func")
+                let getMonth = getAllMilkbyMonthofYear.rows[index].month
+                let getCount = getAllMilkbyMonthofYear.rows[index].sum
+                console.log(getAllMilkbyMonthofYear.rows[index].sum)
+                rows[getMonth - 1].sum = getCount
+                console.log(rows[getMonth - 1])
+            });
+
+            message = "Sussess :)"
+            console.log(rows)
+            console.log(message);
+            return res.status(200).send({ data: { year: year, total: total, rows: rows } })
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
     } catch (err) {
         message = "Error"
         console.error(err.message);
     }
-
     return res.status(500).send({ data: { message: message } });
 }
+
+
 
 exports.getMilkByID = async (req, res) => {
 
@@ -235,8 +335,9 @@ exports.addNewMilk = async (req, res) => {
             const addMilk = await pool.query(`INSERT INTO milks (farm_id, milk_liter_morn, milk_liter_even, milk_date, total) values ($1,$2,$3,$4,$5)`,
                 [farm_id, milk_liter_morn, milk_liter_even, milk_date, total]);
             message = "Milk Created :)"
+            const checkMilk = await pool.query(`SELECT * FROM milks WHERE farm_id = $1 AND milk_date = $2 ORDER BY milk_id DESC`, [farm_id, milk_date])
             console.log(message)
-            return res.status(200).send({ data: { message: message } });
+            return res.status(200).send({ data: { message: message, rows: checkMilk.rows[0]} });
 
         } else {
             message = "You are not a member in this farm"
