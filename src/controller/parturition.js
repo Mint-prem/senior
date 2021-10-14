@@ -51,7 +51,7 @@ exports.getParturitionByID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
-            const getPartu = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1 AND farm_id = $2", [parturition_id, farm_id]);
+            const getPartu = await pool.query("SELECT * FROM parturition WHERE parturition_id = $1", [parturition_id]);
             if (getPartu.rows.length != 0) {
                 message = "Sussess :)"
                 console.log(message);
@@ -384,7 +384,7 @@ exports.deleteParturitionByID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             if (checkMember.rows[0].role_id == 1) {
-                const ret = await pool.query(`DELETE FROM parturition WHERE parturition_id = $1 AND farm_id = $2`, [parturition_id, farm_id]);
+                const ret = await pool.query(`DELETE FROM parturition WHERE parturition_id = $1`, [parturition_id]);
                 message = "Parturition Deleted :)"
                 console.log(message);
                 return res.status(200).send({ data: { message: message } })
