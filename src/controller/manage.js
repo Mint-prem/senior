@@ -57,7 +57,16 @@ exports.getRequestByFarmID = async (req, res) => {
 
             if (checkMember.rows[0].role_id == 1) {
                 const getRequest = await pool.query("SELECT * FROM join_farm WHERE farm_id = $1", [farm_id]);
-                return res.status(200).send({ data: { rows: getRequest.rows } })
+
+                if(getRequest.rows.length > 0){
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { rows: getRequest.rows } })
+                } else {
+                    message = "Don't have any request"
+                    console.log(message)
+                    return res.status(200).send({ data: { message: message } })
+                }
 
             } else {
                 message = "You don't have permission!!"
