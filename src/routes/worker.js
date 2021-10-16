@@ -19,8 +19,11 @@ module.exports = function (app) {
 
     app.post('/workers/add', controller.addNewWorker);
 
-    app.put('/workers/edit', controller.updateWorkerByID);
+    app.put('/workers/edit', controller.updateRoleByWorkerID);
 
-    app.delete('/workers/delete', controller.deleteWorkerByUserID);
+    //app.delete('/workers/delete', controller.deleteWorkerByUserID);
+
+    app.delete('/workers/delete', controller.deleteWorkerByWorkerID);
+
 
 };
