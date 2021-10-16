@@ -56,7 +56,7 @@ exports.getRequestByFarmID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             if (checkMember.rows[0].role_id == 1) {
-                const getRequest = await pool.query("SELECT * FROM join_farm WHERE farm_id = $1", [farm_id]);
+                const getRequest = await pool.query("SELECT * FROM join_farm j INNER JOIN users u ON j.user_id = u.user_id WHERE j.farm_id = $1", [farm_id]);
 
                 if(getRequest.rows.length > 0){
                     message = "Success :)"
