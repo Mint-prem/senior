@@ -14,6 +14,8 @@ module.exports = function (app) {
     app.post('/abdominal/id', controller.getAbdominalByID);
 
     app.post('/farms/abdominal', controller.getAbdominalByFarmID);
+    
+    app.post('/farms/abdominal/cows', controller.getCowByAbdominal);
 
     app.post('/cows/abdominal', controller.getAbdominalByCowID);
 

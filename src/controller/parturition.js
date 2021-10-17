@@ -229,7 +229,7 @@ exports.addNewParturition = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         }
 
-        const checkAb = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
+        const checkAb = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [ab_id])
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
         const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
         const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
@@ -254,7 +254,7 @@ exports.addNewParturition = async (req, res) => {
             const checkAdd = await pool.query(`SELECT * FROM parturition WHERE ab_id = $1 AND par_date = $2 AND calf_name = $3 AND calf_sex = $4`, [ab_id, par_date, calf_name, calf_sex])
             message = "Parturition Created :)"
             console.log(message);
-            return res.status(200).send({ message: message, rows: checkAdd.rows })
+            return res.status(200).send( {data: { message: message, rows: checkAdd.rows }})
 
         } else {
             message = "You are not a member in this farm"
