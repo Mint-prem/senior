@@ -415,7 +415,7 @@ exports.deleteCowByID = async (req, res) => {
                 const deleteCow = await pool.query(`DELETE FROM cows WHERE cow_id = $1 AND farm_id = $2`, [cow_id, farm_id]);
                 message = "Cow Deleted :)"
                 console.log(message);
-                return res.status(500).send({ data: { message: message } })
+                return res.status(200).send({ data: { message: message } })
             } else {
                 message = "You don't have permission to delete!!"
                 console.log(message)
