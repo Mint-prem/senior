@@ -136,30 +136,26 @@ exports.getAllMilkYear = async (req, res) => {
                 console.log("total : " + total)
             }
 
-            rows = []
-
-            for (let i = 0; i < month; i++) {
-                rows[i] = { month: i + 1, sum: 0 }
-            }
-
             const getAllMilkbyMonthofYear = await pool.query(
                 `SELECT (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), SUM(total)
                     FROM milks WHERE farm_id = $1 AND date_part('year', milk_date) = date_part('year', CURRENT_DATE)
                     GROUP BY (SELECT EXTRACT(MONTH FROM milk_date) AS "month"), farm_id;`, [farm_id]);
 
-            getAllMilkbyMonthofYear.rows.forEach((member, index) => {
-                console.log("In func")
-                let getMonth = getAllMilkbyMonthofYear.rows[index].month
-                let getCount = getAllMilkbyMonthofYear.rows[index].sum
-                console.log(getAllMilkbyMonthofYear.rows[index].sum)
-                rows[getMonth - 1].sum = getCount
-                console.log(rows[getMonth - 1])
-            });
+            const milk = []
+            for (let i = 0; i < month; i++) {
+                let getMonth = getAllMilkbyMonthofYear.rows[i].month
+                let getCount = getAllMilkbyMonthofYear.rows[i].sum
+                var months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
+                "พฤษภาคม ", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
+                "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
+                let month = months[i]
+                milk[i] = { month: month, sum: getCount }
+            }
 
             message = "Sussess :)"
-            console.log(rows)
+            console.log(milk)
             console.log(message);
-            return res.status(200).send({ data: { year: year, total: total, rows: rows } })
+            return res.status(200).send({ data: { year: year, total: total, rows: milk } })
 
         } else {
             message = "You are not a member in this farm"
