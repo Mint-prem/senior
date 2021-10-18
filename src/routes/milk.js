@@ -17,6 +17,8 @@ module.exports = function (app) {
 
     app.post('/milks/id', controller.getMilkByID);
 
+    app.post('/milks/today', controller.getMilkToday);
+
     app.post('/farms/milks', controller.getMilkByFarmID);
 
     app.post('/milks/create', controller.addNewMilk);

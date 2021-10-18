@@ -290,6 +290,64 @@ exports.getMilkByFarmID = async (req, res) => {
     return res.status(500).send({ data: { message: message } });
 }
 
+exports.getMilkToday = async (req, res) => {
+
+    try {
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
+        message = "Method Error"
+
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
+
+            const MilkByID = await pool.query(`SELECT * FROM milks WHERE farm_id = $1 ORDER BY milk_id DESC LIMIT 1`, [farm_id]);
+
+            if (MilkByID.rows.length != 0) {
+                message = "Sussess :)"
+                console.log(message);
+                return res.status(200).send({ data: { rows: MilkByID.rows } })
+            } else {
+                message = "Don't have milk data in farm";
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } });
+}
+
 exports.addNewMilk = async (req, res) => {
 
     try {
