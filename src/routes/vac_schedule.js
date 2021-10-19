@@ -15,7 +15,13 @@ module.exports = function (app) {
 
     app.post('/farm/schedules', controller.getScheduleByFarmID);
 
+    app.post('/farm/distinct/vac', controller.getDistinctVacByFarmID);
+
+    app.post('/farm/distinct/cow', controller.getDistinctCowByVacID);
+
     app.post('/cows/shedules', controller.getScheduleByCowID);
+
+    app.post('/cows/shedules/vac', controller.getVacScheduleByCowID);
 
     app.post('/schedules/create', controller.addNewSchedule);
 
