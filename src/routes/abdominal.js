@@ -15,7 +15,9 @@ module.exports = function (app) {
 
     app.post('/farms/abdominal', controller.getAbdominalByFarmID);
     
-    app.post('/farms/abdominal/cows', controller.getCowByAbdominal);
+    app.post('/farms/abdominal/cows', controller.getDistinctCowByFarmID);
+    
+    app.post('/cows/abdominal/success', controller.getCowByAbdominal);
 
     app.post('/cows/abdominal', controller.getAbdominalByCowID);
 
