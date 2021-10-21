@@ -102,7 +102,10 @@ exports.getWorkerByFarm = async (req, res) => {
             }
         }
 
-        const getWorkerByFarmID = await pool.query(`SELECT * FROM workers WHERE farm_id = $1`, [farm_id])
+        const getWorkerByFarmID = await pool.query(`SELECT * FROM workers w 
+        JOIN users u ON u.user_id = w.user_id 
+        JOIN roles r ON w.role_id = r.role_id
+        WHERE w.farm_id = $1`, [farm_id])
 
         if (getWorkerByFarmID.rows.length != 0) {
             message = "Sussess :)"

@@ -355,8 +355,11 @@ exports.getAbdominalByCowID = async (req, res) => {
                 const date = new Date();
                 var currentDate = date.toISOString();
 
+                ab_id = getAbByCowID.rows[0].abdominal_id
+
                 setAb[0] =
                 {
+                    abdominal_id: ab_id,
                     firstHeat: firstHeat, firstcount: getNumberOfDays(currentDate, firstHeat),
                     secondHeat: secondHeat, secondcount: getNumberOfDays(currentDate, secondHeat),
                     thirdHeat: thirdHeat, thirdcount: getNumberOfDays(currentDate, thirdHeat),
@@ -368,7 +371,7 @@ exports.getAbdominalByCowID = async (req, res) => {
 
                 message = "Sussess :)"
                 console.log(message);
-                return res.status(200).send({ data: { ment: 1, count: count, rows: getAbByCowID.rows[0], date: setAb} })
+                return res.status(200).send({ data: { ment: 1, count: count, rows: getAbByCowID.rows[0], date: setAb } })
             } else {
                 count = 0
                 message = "Cow id " + cow_id + " don't have abdominal data";
@@ -434,6 +437,7 @@ exports.getManyAbdominalByCowID = async (req, res) => {
 
             if (getAbByCowID.rows.length != 0) {
 
+                setDateAb = []
                 setAb = []
 
                 getAbByCowID.rows.forEach((member, index) => {
@@ -452,8 +456,65 @@ exports.getManyAbdominalByCowID = async (req, res) => {
                     const date = new Date();
                     var currentDate = date.toISOString();
 
+                    setDateAb[index] =
+                    {
+                        firstHeat: firstHeat, firstcount: getNumberOfDays(currentDate, firstHeat),
+                        secondHeat: secondHeat, secondcount: getNumberOfDays(currentDate, secondHeat),
+                        thirdHeat: thirdHeat, thirdcount: getNumberOfDays(currentDate, thirdHeat),
+                        dryDate: dryDate, drycount: getNumberOfDays(currentDate, dryDate),
+                        parDate: parDate, parcount: getNumberOfDays(currentDate, parDate)
+                    }
+                    console.log(setDateAb)
+
+                    console.log(getAbByCowID.rows)
+
+                    abdominal_id = getAbByCowID.rows[index].abdominal_id
+                    cow_ID = getAbByCowID.rows[index].cow_id
+                    round = getAbByCowID.rows[index].round
+                    ab_date = getAbByCowID.rows[index].ab_date
+                    ab_status = getAbByCowID.rows[index].ab_status
+                    ab_caretaker = getAbByCowID.rows[index].ab_caretaker
+                    semen_id = getAbByCowID.rows[index].semen_id
+                    semen_name = getAbByCowID.rows[index].semen_name
+                    semen_specie = getAbByCowID.rows[index].semen_specie
+                    ab_calf = getAbByCowID.rows[index].ab_calf
+                    note = getAbByCowID.rows[index].note
+                    type_id = getAbByCowID.rows[index].type_id
+                    specie_id = getAbByCowID.rows[index].specie_id
+                    farm_ID = getAbByCowID.rows[index].farm_id
+                    status_id = getAbByCowID.rows[index].status_id
+                    cow_no = getAbByCowID.rows[index].cow_no
+                    cow_name = getAbByCowID.rows[index].cow_name
+                    cow_birthday = getAbByCowID.rows[index].cow_birthday
+                    cow_sex = getAbByCowID.rows[index].cow_sex
+                    mom_id = getAbByCowID.rows[index].mom_id
+                    mom_specie = getAbByCowID.rows[index].mom_specie
+                    cow_image = getAbByCowID.rows[index].cow_image
+
                     setAb[index] =
                     {
+                        abdominal_id: abdominal_id,
+                        cow_id: cow_ID,
+                        round: round,
+                        ab_date: ab_date,
+                        ab_status: ab_status,
+                        ab_caretaker: ab_caretaker,
+                        semen_id: semen_id,
+                        semen_name: semen_name,
+                        semen_specie: semen_specie,
+                        ab_calf: ab_calf,
+                        note: note,
+                        type_id: type_id,
+                        specie_id: specie_id,
+                        farm_id: farm_ID,
+                        status_id: status_id,
+                        cow_no: cow_no,
+                        cow_name: cow_name,
+                        cow_birthday: cow_birthday,
+                        cow_sex: cow_sex,
+                        mom_id: mom_id,
+                        mom_specie: mom_specie,
+                        cow_image: cow_image,
                         firstHeat: firstHeat, firstcount: getNumberOfDays(currentDate, firstHeat),
                         secondHeat: secondHeat, secondcount: getNumberOfDays(currentDate, secondHeat),
                         thirdHeat: thirdHeat, thirdcount: getNumberOfDays(currentDate, thirdHeat),
@@ -465,7 +526,7 @@ exports.getManyAbdominalByCowID = async (req, res) => {
 
                 message = "Sussess :)"
                 console.log(message);
-                return res.status(200).send({ data: { ment: 1, rows: getAbByCowID.rows, date: setAb } })
+                return res.status(200).send({ data: { ment: 1, rows: getAbByCowID.rows, date: setDateAb, all: setAb } })
             } else {
                 message = "Cow id " + cow_id + " don't have abdominal data";
                 return res.status(200).send({ data: { ment: 2, message: message } })
