@@ -336,11 +336,18 @@ exports.getAbdominalByCowID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             const getAbByCowID = await pool.query("SELECT * FROM abdominal a join cows c on a.cow_id = c.cow_id WHERE a.cow_id = $1 ORDER BY ab_date DESC", [cow_id]);
+            
             if (getAbByCowID.rows.length != 0) {
+
                 getCount = await pool.query(`SELECT COUNT(*) FROM abdominal a join cows c on a.cow_id = c.cow_id WHERE a.cow_id = $1`, [cow_id])
                 count = getCount.rows[0].count
+                getSuccess = await pool.query(`SELECT COUNT(a.ab_status) FROM abdominal a JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND a.ab_status = 'success'`, [cow_id])
+                countSuc = getSuccess.rows[0].count
+                getFail = await pool.query(`SELECT COUNT(a.ab_status) FROM abdominal a JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND a.ab_status = 'fail'`, [cow_id])
+                countFail = getFail.rows[0].count
 
                 setAb = []
+                setDateAb = []
 
                 abDate = getAbByCowID.rows[0].ab_date
 
@@ -357,7 +364,7 @@ exports.getAbdominalByCowID = async (req, res) => {
 
                 ab_id = getAbByCowID.rows[0].abdominal_id
 
-                setAb[0] =
+                setDateAb[0] =
                 {
                     abdominal_id: ab_id,
                     firstHeat: firstHeat, firstcount: getNumberOfDays(currentDate, firstHeat),
@@ -366,12 +373,67 @@ exports.getAbdominalByCowID = async (req, res) => {
                     dryDate: dryDate, drycount: getNumberOfDays(currentDate, dryDate),
                     parDate: parDate, parcount: getNumberOfDays(currentDate, parDate)
                 }
-                console.log(setAb)
 
+                abdominal_id = getAbByCowID.rows[0].abdominal_id
+                cow_ID = getAbByCowID.rows[0].cow_id
+                round = getAbByCowID.rows[0].round
+                ab_date = getAbByCowID.rows[0].ab_date
+                ab_status = getAbByCowID.rows[0].ab_status
+                ab_caretaker = getAbByCowID.rows[0].ab_caretaker
+                semen_id = getAbByCowID.rows[0].semen_id
+                semen_name = getAbByCowID.rows[0].semen_name
+                semen_specie = getAbByCowID.rows[0].semen_specie
+                ab_calf = getAbByCowID.rows[0].ab_calf
+                note = getAbByCowID.rows[0].note
+                type_id = getAbByCowID.rows[0].type_id
+                specie_id = getAbByCowID.rows[0].specie_id
+                farm_ID = getAbByCowID.rows[0].farm_id
+                status_id = getAbByCowID.rows[0].status_id
+                cow_no = getAbByCowID.rows[0].cow_no
+                cow_name = getAbByCowID.rows[0].cow_name
+                cow_birthday = getAbByCowID.rows[0].cow_birthday
+                cow_sex = getAbByCowID.rows[0].cow_sex
+                mom_id = getAbByCowID.rows[0].mom_id
+                mom_specie = getAbByCowID.rows[0].mom_specie
+                cow_image = getAbByCowID.rows[0].cow_image
+
+                setAb[0] =
+                {
+                    abdominal_id: abdominal_id,
+                    count: count,
+                    countSuc: countSuc,
+                    countFail: countFail,
+                    cow_id: cow_ID,
+                    round: round,
+                    ab_date: ab_date,
+                    ab_status: ab_status,
+                    ab_caretaker: ab_caretaker,
+                    semen_id: semen_id,
+                    semen_name: semen_name,
+                    semen_specie: semen_specie,
+                    ab_calf: ab_calf,
+                    note: note,
+                    type_id: type_id,
+                    specie_id: specie_id,
+                    farm_id: farm_ID,
+                    status_id: status_id,
+                    cow_no: cow_no,
+                    cow_name: cow_name,
+                    cow_birthday: cow_birthday,
+                    cow_sex: cow_sex,
+                    mom_id: mom_id,
+                    mom_specie: mom_specie,
+                    cow_image: cow_image,
+                    firstHeat: firstHeat, firstcount: getNumberOfDays(currentDate, firstHeat),
+                    secondHeat: secondHeat, secondcount: getNumberOfDays(currentDate, secondHeat),
+                    thirdHeat: thirdHeat, thirdcount: getNumberOfDays(currentDate, thirdHeat),
+                    dryDate: dryDate, drycount: getNumberOfDays(currentDate, dryDate),
+                    parDate: parDate, parcount: getNumberOfDays(currentDate, parDate)
+                }
 
                 message = "Sussess :)"
                 console.log(message);
-                return res.status(200).send({ data: { ment: 1, count: count, rows: getAbByCowID.rows[0], date: setAb } })
+                return res.status(200).send({ data: { ment: 1, count: count, rows: getAbByCowID.rows[0], date: setDateAb, all: setAb } })
             } else {
                 count = 0
                 message = "Cow id " + cow_id + " don't have abdominal data";
@@ -436,6 +498,12 @@ exports.getManyAbdominalByCowID = async (req, res) => {
             const getAbByCowID = await pool.query("SELECT * FROM abdominal a join cows c on a.cow_id = c.cow_id WHERE a.cow_id = $1", [cow_id]);
 
             if (getAbByCowID.rows.length != 0) {
+                getCount = await pool.query(`SELECT COUNT(*) FROM abdominal a join cows c on a.cow_id = c.cow_id WHERE a.cow_id = $1`, [cow_id])
+                count = getCount.rows[0].count
+                getSuccess = await pool.query(`SELECT COUNT(a.ab_status) FROM abdominal a JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND a.ab_status = 'success'`, [cow_id])
+                countSuc = getSuccess.rows[0].count
+                getFail = await pool.query(`SELECT COUNT(a.ab_status) FROM abdominal a JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND a.ab_status = 'fail'`, [cow_id])
+                countFail = getFail.rows[0].count
 
                 setDateAb = []
                 setAb = []
@@ -466,8 +534,6 @@ exports.getManyAbdominalByCowID = async (req, res) => {
                     }
                     console.log(setDateAb)
 
-                    console.log(getAbByCowID.rows)
-
                     abdominal_id = getAbByCowID.rows[index].abdominal_id
                     cow_ID = getAbByCowID.rows[index].cow_id
                     round = getAbByCowID.rows[index].round
@@ -494,6 +560,9 @@ exports.getManyAbdominalByCowID = async (req, res) => {
                     setAb[index] =
                     {
                         abdominal_id: abdominal_id,
+                        count: count,
+                        countSuc: countSuc,
+                        countFail: countFail,
                         cow_id: cow_ID,
                         round: round,
                         ab_date: ab_date,

@@ -180,9 +180,90 @@ exports.getParturitionByCowID = async (req, res) => {
                 INNER JOIN abdominal a ON a.abdominal_id = p.ab_id 
                 INNER JOIN cows c ON a.cow_id = c.cow_id WHERE c.cow_id = $1`, [cow_id]);
             if (getPartuByCow.rows.length != 0) {
+                getCount = await pool.query(`SELECT COUNT(*) FROM parturition p 
+                JOIN abdominal a ON a.abdominal_id = p.ab_id
+                JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1`, [cow_id])
+                count = getCount.rows[0].count
+                getSuccess = await pool.query(`SELECT COUNT(*) FROM parturition p 
+                JOIN abdominal a ON a.abdominal_id = p.ab_id
+                JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND p.par_status = 'ปกติ'`, [cow_id])
+                countSuc = getSuccess.rows[0].count
+                getFail = await pool.query(`SELECT COUNT(*) FROM parturition p 
+                JOIN abdominal a ON a.abdominal_id = p.ab_id
+                JOIN cows c ON a.cow_id = c.cow_id WHERE a.cow_id = $1 AND p.par_status = 'แท้ง'`, [cow_id])
+                countFail = getFail.rows[0].count
+
+                setPar = []
+
+                parturition_id = getPartuByCow.rows[0].parturition_id
+                ab_id = getPartuByCow.rows[0].ab_id
+                par_date = getPartuByCow.rows[0].par_date
+                calf_name = getPartuByCow.rows[0].calf_name
+                calf_sex = getPartuByCow.rows[0].calf_sex
+                par_caretaker = getPartuByCow.rows[0].par_caretaker
+                par_status = getPartuByCow.rows[0].par_status
+                note = getPartuByCow.rows[0].note
+                cow_ID = getPartuByCow.rows[0].cow_id
+                round = getPartuByCow.rows[0].round
+                ab_date = getPartuByCow.rows[0].ab_date
+                ab_status = getPartuByCow.rows[0].ab_status
+                ab_caretaker = getPartuByCow.rows[0].ab_caretaker
+                semen_id = getPartuByCow.rows[0].semen_id
+                semen_name = getPartuByCow.rows[0].semen_name
+                semen_specie = getPartuByCow.rows[0].semen_specie
+                ab_calf = getPartuByCow.rows[0].ab_calf
+                note = getPartuByCow.rows[0].note
+                type_id = getPartuByCow.rows[0].type_id
+                specie_id = getPartuByCow.rows[0].specie_id
+                farm_ID = getPartuByCow.rows[0].farm_id
+                status_id = getPartuByCow.rows[0].status_id
+                cow_no = getPartuByCow.rows[0].cow_no
+                cow_name = getPartuByCow.rows[0].cow_name
+                cow_birthday = getPartuByCow.rows[0].cow_birthday
+                cow_sex = getPartuByCow.rows[0].cow_sex
+                mom_id = getPartuByCow.rows[0].mom_id
+                mom_specie = getPartuByCow.rows[0].mom_specie
+                cow_image = getPartuByCow.rows[0].cow_image
+
+                setPar[0] =
+                {
+                    parturition_id: parturition_id,
+                    count: count,
+                    countSuc: countSuc,
+                    countFail: countFail,
+                    ab_id: ab_id,
+                    par_date: par_date,
+                    calf_name: calf_name,
+                    calf_sex: calf_sex,
+                    par_caretaker: par_caretaker,
+                    par_status: par_status,
+                    note: note,
+                    cow_id: cow_ID,
+                    round: round,
+                    ab_date: ab_date,
+                    ab_status: ab_status,
+                    ab_caretaker: ab_caretaker,
+                    semen_id: semen_id,
+                    semen_name: semen_name,
+                    semen_specie: semen_specie,
+                    ab_calf: ab_calf,
+                    note: note,
+                    type_id: type_id,
+                    specie_id: specie_id,
+                    farm_id: farm_ID,
+                    status_id: status_id,
+                    cow_no: cow_no,
+                    cow_name: cow_name,
+                    cow_birthday: cow_birthday,
+                    cow_sex: cow_sex,
+                    mom_id: mom_id,
+                    mom_specie: mom_specie,
+                    cow_image: cow_image,
+                }
+
                 message = "Sussess :)"
                 console.log(message);
-                return res.status(200).send({ data: { ment: 1, rows: getPartuByCow.rows } })
+                return res.status(200).send({ data: { ment: 1, rows: setPar } })
             } else {
                 message = "Cow id " + cow_id + " don't have parturition data";
                 console.log(message);
@@ -261,14 +342,14 @@ exports.addNewParturition = async (req, res) => {
             const semen_name = findByID.rows[0].semen_name
             const semen_specie = findByID.rows[0].semen_specie
             const note = findByID.rows[0].note
-            
+
             const ret = await pool.query(`UPDATE abdominal SET cow_id = $1, round = $2, ab_date = $3, ab_status = $4, ab_caretaker = $5, semen_id = $6, semen_name = $7, semen_specie = $8, ab_calf = $9, note = $10 WHERE abdominal_id = $11`,
                 [cow_id, round, ab_date, ab_status, ab_caretaker, semen_id, semen_name, semen_specie, 't', note, ab_id]);
 
             const checkAdd = await pool.query(`SELECT * FROM parturition WHERE ab_id = $1 AND par_date = $2 AND calf_name = $3 AND calf_sex = $4`, [ab_id, par_date, calf_name, calf_sex])
             message = "Parturition Created :)"
             console.log(message);
-            return res.status(200).send( {data: { message: message, rows: checkAdd.rows }})
+            return res.status(200).send({ data: { message: message, rows: checkAdd.rows } })
 
         } else {
             message = "You are not a member in this farm"
