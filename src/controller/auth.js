@@ -89,27 +89,6 @@ exports.signin = async (req, res) => {
                 return res.status(500).send({ data: { message: "Wrong Password" } })
             }
         }
-        // const hashedPass = await bcrypt.hash(req.body.password, 10)
-        // console.log(req.body.password + '\n' + hashedPass)
-
-
-
-        // const account = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
-
-        // if (account.rows.length == 0 || null) {
-        //   return res.status(500).send({ data: { message: "Account not found!!" } })
-        // } else {
-        //   if (password != account.rows[0].password) {
-        //     return res.status(500).send({ data: { message: "Wrong Password" } })
-        //   } else if (password == account.rows[0].password) {
-        //     var token = jwt.sign({ user_id: account.rows[0].user_id }, config.secret, {
-        //       expiresIn: '120d' // 120 day
-        //       //expiresIn: 86400 // 24 hours
-        //     });
-        //     return res.status(200).send({ data: { token: token } })
-
-        //   }
-        // }
 
     } catch (err) {
         console.error(err.message);

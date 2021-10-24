@@ -84,7 +84,7 @@ exports.updateUserByID = async (req, res) => {
         message = "Account Updated :)"
 
         console.log(message);
-        return res.status(500).send({ data: { message: message, rows: checkUpdate.rows} })
+        return res.status(200).send({ data: { message: message, rows: checkUpdate.rows} })
         
     } catch (err) {
         message = "Error"

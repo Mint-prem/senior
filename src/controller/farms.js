@@ -232,39 +232,55 @@ exports.checkFarm = async (req, res) => {
             message = "User ID  is required"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } 
+        }
 
         const user_id = req.body.user_id;
 
-        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
-        if (checkUser.rows.length == 0 || null) {
-            message = "Don't have User ID: " + user_id
-            console.log(message)
-            return res.status(500).send({ data: { message: message } })
+        const account = await pool.query(`SELECT * FROM users u 
+        JOIN workers w ON u.user_id = w.user_id 
+        JOIN roles r ON r.role_id = w.role_id 
+        JOIN farms f ON f.farm_id = w.farm_id WHERE w.user_id = $1`, [user_id]);
+
+        if (account.rows.length == 0 || null) {
+
+            const join = await pool.query(`SELECT * FROM users u JOIN join_farm j ON j.user_id = u.user_id 
+            WHERE u.user_id = $1`, [user_id])
+
+            if (join.rows.length == 0 || null) {
+
+                const user = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id]);
+
+                if (user.rows.length == 0 || null) {
+                    return res.status(500).send({ message: "Account not found!!" });
+                } else {
+                    console.log('B')
+                    return res.status(200).send({ data: { message: 'B', rows: user.rows } });
+                }
+
+            } else {
+                console.log('C')
+                return res.status(200).send({ data: { message: 'C', rows: join.rows } });
+            }
+
+        } else if (account.rows[0].role_id == 1) {
+            console.log('A')
+            return res.status(200).send({ data: { message: 'A', rows: account.rows } });
+
+        } else if (account.rows[0].role_id == 2) {
+            console.log('D')
+            return res.status(200).send({ data: { message: 'D', rows: account.rows } });
+
         }
-
-        const worker = await pool.query(`SELECT * FROM workers WHERE user_id = $1`, [user_id])
-
-        if (worker.rows.length == 0) {
-            message = "User Don't have Farm"
-            console.log(message)
-            return res.status(200).send({ data: { rows: "A" } })
-        } else {
-            const account = await pool.query(`SELECT * FROM users u join
-        workers w on u.user_id = w.user_id join
-        roles r on w.user_id = r.role_id join
-        farms f on w.farm_id = f.farm_id WHERE u.user_id = $1`, [user_id]);
-
-            message = "User have Farm"
-            console.log(message)
-            return res.status(200).send({ data: { rows: account.rows } })
+        else {
+            console.log('Bug')
+            return res.status(200).send({ data: { message: 'SignUP' } });
         }
 
     } catch (err) {
         message = "Error"
         console.log(err.message)
     }
-
+    console.log('Bug')
     return res.status(500).send({ data: { message: message } })
 }
 
@@ -293,7 +309,7 @@ exports.updateFarm = async (req, res) => {
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
-        
+
         const farm_id = req.body.farm_id;
         let farm_no = req.body.farm_no;
         let farm_name = req.body.farm_name;
