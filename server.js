@@ -45,7 +45,7 @@ app.get('/', (req, res) =>{
 
 }) 
 
-pool.connect();
+//pool.connect();
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
