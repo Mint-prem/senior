@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000
-const pool = require(`./src/database/pool`);
+//const pool = require(`./src/database/pool`);
 
 const { Pool } = require('pg');
 const pool = new Pool({
