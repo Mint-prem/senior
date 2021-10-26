@@ -40,7 +40,7 @@ exports.getRequestByUserID = async (req, res) => {
 exports.addNewRequest = async (req, res) => {
 
     try {
-        const farm_id = req.body.farm_id
+        const farm_code = req.body.farm_code
         const user_id = req.body.user_id
 
 
@@ -48,40 +48,41 @@ exports.addNewRequest = async (req, res) => {
             message = "Please Fill User ID"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } else if (farm_id.length == 0 || null) {
-            message = "Please Fill Farm ID"
+        } else if (farm_code.length == 0 || null) {
+            message = "Please Fill Farm Code"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
 
         const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
-        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
-
-
+        const findFarmByCode = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
+        
         if (checkUser.rows.length == 0 || null) {
             message = "Don't have User ID " + user_id;
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-        } else if (findFarmByID.rows.length == 0 || null) {
-            message = "Don't have farm ID " + farm_id;
+            
+        } else if (findFarmByCode.rows.length == 0 || null) {
+            message = "Don't have farm Code " + farm_code;
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
-
         const userHaveFarm = await pool.query(`SELECT * FROM workers WHERE user_id = $1`, [user_id])
         if (userHaveFarm.rows.length != 0) {
             message = "User already have farm"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
-
         const findRequest = await pool.query(`SELECT * FROM join_farm WHERE user_id = $1`, [user_id])
         if (findRequest.rows.length != 0) {
             message = "Can't create new request because you already request another farm"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
-
+            
         } else {
+            const getFarmID = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
+            farm_id = getFarmID.rows[0].farm_id
+
             const createReq = await pool.query(`INSERT INTO join_farm (user_id,farm_id) values ($1,$2)`, [user_id, farm_id]);
 
             const checkCreate = await pool.query(`SELECT * FROM join_farm WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
