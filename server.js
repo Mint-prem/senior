@@ -5,6 +5,14 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000
 const pool = require(`./src/database/pool`);
 
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
 var corsOptions = {
     origin: "http://localhost:3001"
 };
@@ -45,7 +53,21 @@ app.get('/', (req, res) =>{
 
 }) 
 
+app.get('/db', async (req, res) => {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('SELECT * FROM test_table');
+      const results = { 'results': (result) ? result.rows : null};
+      res.render('pages/db', results );
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send("Error " + err);
+    }
+  })
+
 //pool.connect();
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
