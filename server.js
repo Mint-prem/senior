@@ -43,8 +43,6 @@ require('./src/routes/user_request')(app);
 require('./src/routes/manage')(app);
 require('./src/routes/userdiary')(app);
 
-
-
 require("dotenv").config();
 
 app.get('/', (req, res) =>{
@@ -56,7 +54,7 @@ app.get('/', (req, res) =>{
 app.get('/db', async (req, res) => {
     try {
       const client = await pool.connect();
-      const result = await client.query('SELECT * FROM test_table');
+      const result = await client.query('SELECT * FROM cows');
       const results = { 'results': (result) ? result.rows : null};
       res.render('pages/db', results );
       client.release();
@@ -67,7 +65,6 @@ app.get('/db', async (req, res) => {
   })
 
 //pool.connect();
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
