@@ -3,7 +3,15 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000
-const pool = require(`./src/database/pool`);
+//const pool = require(`./src/database/pool`);
+
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 var corsOptions = {
     origin: "http://localhost:3001"
@@ -35,8 +43,6 @@ require('./src/routes/user_request')(app);
 require('./src/routes/manage')(app);
 require('./src/routes/userdiary')(app);
 
-
-
 require("dotenv").config();
 
 app.get('/', (req, res) =>{
@@ -45,7 +51,7 @@ app.get('/', (req, res) =>{
 
 }) 
 
-pool.connect();
+//pool.connect();
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
