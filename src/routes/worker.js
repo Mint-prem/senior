@@ -21,7 +21,7 @@ module.exports = function (app) {
 
     app.put('/workers/edit', controller.updateRoleByWorkerID);
 
-    //app.delete('/workers/delete', controller.deleteWorkerByUserID);
+    app.delete('/worker/delete', controller.deleteWorkerByUserID);
 
     app.delete('/workers/delete', controller.deleteWorkerByWorkerID);
 
