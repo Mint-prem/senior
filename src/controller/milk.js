@@ -18,6 +18,88 @@ exports.getAllMilk = async (req, res) => {
 
 }
 
+exports.getAllMilkWeek = async (req, res) => {
+
+    try {
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
+
+        if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
+
+            var curr = new Date();
+            day = curr.getDay();
+            console.log(day)
+            firstday = new Date(curr.getTime() - 60 * 60 * 24 * day * 1000);
+
+            const milk = []
+            var getSum = 0
+
+            for (let i = 0; i < 7; i++) {
+                try {
+                    var date = new Date(firstday)
+                    date.setDate(date.getDate() + i)
+                    
+                    const getMilkByDate = await pool.query(
+                        `SELECT * FROM milks 
+                            WHERE farm_id = $1 
+                            AND milk_date =$2`, [farm_id, date]);
+    
+                    var dayofweek = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ",
+                        "พฤหัสบดี ", "ศุกร์", "เสาร์", "อาทิตย์"]
+               
+                    getMilk = getMilkByDate.rows[0].total
+                    getSum += getMilk
+                } catch (error) {
+                    getMilk = 0;
+                }
+
+                milk[i] = { day: dayofweek[i], date: date, total: getMilk }
+            }
+
+            message = "Sussess :)"
+            console.log(message);
+            console.log(milk);
+
+
+            return res.status(200).send({ data: { total: getSum, rows: milk } })
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } });
+
+}
+
 exports.getAllMilkMonth = async (req, res) => {
 
     try {
@@ -71,7 +153,7 @@ exports.getAllMilkMonth = async (req, res) => {
                 total = countTotalMilk.rows[0].total
                 console.log("total : " + total)
             }
-            return res.status(200).send({ data: { total: total, rows: AllMilk.rows} })
+            return res.status(200).send({ data: { total: total, rows: AllMilk.rows } })
 
         } else {
             message = "You are not a member in this farm"
@@ -146,8 +228,8 @@ exports.getAllMilkYear = async (req, res) => {
                 let getMonth = getAllMilkbyMonthofYear.rows[i].month
                 let getCount = getAllMilkbyMonthofYear.rows[i].sum
                 var months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
-                "พฤษภาคม ", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
-                "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
+                    "พฤษภาคม ", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
+                    "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
                 let month = months[i]
                 milk[i] = { month: month, sum: getCount }
             }
@@ -391,7 +473,7 @@ exports.addNewMilk = async (req, res) => {
             message = "Milk Created :)"
             const checkMilk = await pool.query(`SELECT * FROM milks WHERE farm_id = $1 AND milk_date = $2 ORDER BY milk_id DESC`, [farm_id, milk_date])
             console.log(message)
-            return res.status(200).send({ data: { message: message, rows: checkMilk.rows[0]} });
+            return res.status(200).send({ data: { message: message, rows: checkMilk.rows[0] } });
 
         } else {
             message = "You are not a member in this farm"

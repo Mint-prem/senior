@@ -11,6 +11,8 @@ module.exports = function (app) {
 
     app.get('/milks', controller.getAllMilk);
 
+    app.post('/milks/week', controller.getAllMilkWeek);
+
     app.post('/milks/month', controller.getAllMilkMonth);
     
     app.post('/milks/year', controller.getAllMilkYear);
