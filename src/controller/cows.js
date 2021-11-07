@@ -55,7 +55,7 @@ exports.getCowByID = async (req, res) => {
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
-            
+
             const getCow = await pool.query(
                 `SELECT * FROM cows c
                 INNER JOIN cow_type t ON c.type_id = t.type_id 
@@ -63,7 +63,7 @@ exports.getCowByID = async (req, res) => {
                 INNER JOIN cow_status sta ON c.status_id = sta.status_id 
                 WHERE c.cow_id = $1 AND c.farm_id = $2`, [cow_id, farm_id]
             );
-    
+
             if (getCow.rows.length != 0) {
                 message = "Sussess :)"
                 console.log(message);
@@ -139,6 +139,87 @@ exports.getCowsByFarm = async (req, res) => {
                     console.log(message)
                     return res.status(200).send({ data: { ment: 1, rows: getCowInFarm.rows } })
                 }
+            } else {
+                message = "You are not a member in this farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.getNumOfCowByType = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkfarm.rows.length == 0 || null) {
+            message = "Don't have Farm ID : " + farm_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID : " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+
+            const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+            //console.log(checkMember.rowCount)
+
+            if (checkMember.rows.length == 1) {
+                const getCountCowInFarm = await pool.query(
+                    `SELECT t.type_id, t.type_name, count(*) FROM cows c
+                    INNER JOIN cow_type t ON c.type_id = t.type_id 
+                    WHERE farm_id = $1
+                    GROUP BY t.type_id, t.type_name`, [farm_id]
+                )
+
+                const getTotal = await pool.query(`SELECT count(*) FROM cows WHERE farm_id = $1`, [farm_id])
+                var total = getTotal.rows[0].count
+
+                const countCow = [
+                    { type_name: "ลูกโค", count: 0 },
+                    { type_name: "โคสาว", count: 0 },
+                    { type_name: "โคท้อง", count: 0 },
+                    { type_name: "โคแก่", count: 0 },
+                    { type_name: "โคผสมพันธ์", count: 0 },
+                    { type_name: "โคแห้งนม", count: 0 }
+                ]
+
+                for (let i = 0; i < getCountCowInFarm.rows.length; i++) {
+
+                        var getType = getCountCowInFarm.rows[i].type_id - 1
+                        var getCount = getCountCowInFarm.rows[i].count
+                        var type = ["ลูกโค", "โคสาว", "โคท้อง", "โคแก่", "โคผสมพันธ์ ", "โคแห้งนม"]
+                        var types = type[getType]
+
+                    countCow[getType] = { type_name: types, count: getCount }
+                }
+
+                message = "Success :)"
+                console.log(message)
+                return res.status(200).send({ data: { total: total,rows: countCow } })
+
             } else {
                 message = "You are not a member in this farm"
                 console.log(message)
@@ -338,13 +419,13 @@ exports.updateCowByID = async (req, res) => {
             } else {
 
                 const checkCowNoInFarm = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2 AND cow_id <> $3`, [cow_no, farm_id, cow_id])
- 
+
                 if (checkCowNoInFarm.rows.length > 0) {
                     message = "Cow_No already exist"
                     console.log(message)
                     return res.status(500).send({ data: { message: message } })
                 }
-                
+
                 const editCow = await pool.query(`UPDATE cows SET type_id = $1, specie_id = $2, farm_id = $3, status_id = $4, cow_no = $5, cow_name = $6, cow_birthday = $7, cow_sex = $8, semen_id = $9, semen_specie = $10, mom_id = $11, mom_specie = $12, cow_image = $13, note = $14 WHERE cow_id = $15`,
                     [type_id, specie_id, farm_id, status_id, cow_no, cow_name, cow_birthday, cow_sex, semen_id, semen_specie, mom_id, mom_specie, cow_image, note, cow_id]);
                 message = "Cow Updated :)"

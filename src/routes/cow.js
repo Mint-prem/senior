@@ -15,6 +15,8 @@ module.exports = function (app) {
 
     app.get('/cows', controller.getAllCow);
 
+    app.post('/cows/count', controller.getNumOfCowByType);
+
     app.post('/cows/id', controller.getCowByID);
 
     app.post('/cows/create', controller.addNewCow);
