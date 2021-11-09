@@ -74,7 +74,7 @@ exports.signin = async (req, res) => {
         const account = await pool.query(`SELECT * FROM users WHERE email = $1`, [email])
 
         if (account.rows.length == 0 || null) {
-            return res.status(500).send({ data: { message: "Account not found!!" } })
+            return res.status(500).send({ data: { message: "ไม่พบบัญชีผู้ใช้งาน กรุณาลงทะเบียนผู้ใช้" } })
         } else {
             let hashedPass = account.rows[0].password
             let isEqual = await bcrypt.compare(req.body.password, hashedPass)
@@ -86,14 +86,14 @@ exports.signin = async (req, res) => {
                 return res.status(200).send({ data: { token: token } })
 
             } else {
-                return res.status(500).send({ data: { message: "Wrong Password" } })
+                return res.status(500).send({ data: { message: "รหัสผ่านไม่ถูกต้อง กรุณากรอกใหม่" } })
             }
         }
 
     } catch (err) {
         console.error(err.message);
     }
-    return res.status(500).send({ data: { message: "Error" } })
+    return res.status(500).send({ data: { message: "เกิดข้อผิดพลาด" } })
 };
 
 exports.checkHash = async (req, res) => {
