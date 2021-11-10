@@ -175,11 +175,11 @@ exports.addNewFarm = async (req, res) => {
         const checkFarmCode = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
 
         if (checkFarmNo.rows.length != 0) {
-            message = "Farm No Already Exist"
+            message = "เลขทะเบียนฟาร์มนี้ถูกใช้งานแล้ว กรุณาตั้งใหม่"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (checkFarmCode.rows.length != 0) {
-            message = "Farm Code Already Exist"
+            message = "ไอดีฟาร์มนี้ถูกใช้งานแล้ว กรุณาตั้งใหม่"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         }
@@ -194,7 +194,7 @@ exports.addNewFarm = async (req, res) => {
         const checkNewFarm = await pool.query(`SELECT * FROM farms WHERE farm_name = $1 AND farm_code = $2`, [farm_name, farm_code])
 
         if (checkNewFarm.rows.length == 0 || null) {
-            message = "Can't create farm"
+            message = "ไม่สามารถสร้างฟาร์มได้"
             console.log(message)
             return res.status(500).send({ data: { message: message } })
 
@@ -211,7 +211,7 @@ exports.addNewFarm = async (req, res) => {
                 console.log(message)
                 return res.status(200).send({ data: { message: message, rows: checkNewFarm.rows, owner: checkOwnerAdded.rows } });
             } else {
-                message = "Error!!!! Farm Created But Can't Add Member"
+                message = "สร้างฟาร์มสำเร็จ แต่ไม่สามารถเพิ่มเข้าระบบเป็นเจ้าของฟาร์มได้"
                 console.log(message)
                 return res.status(500).send({ data: { message: message } })
             }
@@ -251,7 +251,7 @@ exports.checkFarm = async (req, res) => {
                 const user = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id]);
 
                 if (user.rows.length == 0 || null) {
-                    return res.status(500).send({ message: "Account not found!!" });
+                    return res.status(500).send({ data: { message: "ไม่พบข้อมูล" } });
                 } else {
                     console.log('B')
                     return res.status(200).send({ data: { message: 'B', rows: user.rows } });
@@ -273,7 +273,7 @@ exports.checkFarm = async (req, res) => {
         }
         else {
             console.log('Bug')
-            return res.status(200).send({ data: { message: 'SignUP' } });
+            return res.status(200).send({ data: { message: 'Bug Check' } });
         }
 
     } catch (err) {
@@ -343,25 +343,12 @@ exports.updateFarm = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
             if (checkMember.rows[0].role_id == 1) {
 
-                const checkFarmNo = await pool.query(`SELECT * FROM farms WHERE farm_no = $1`, [farm_no])
-                const checkFarmCode = await pool.query(`SELECT * FROM farms WHERE farm_code = $1`, [farm_code])
-
-                if (checkFarmNo.rows.length != 0) {
-                    message = "Farm No Already Exist"
-                    console.log(message)
-                    return res.status(500).send({ data: { message: message } })
-                } else if (checkFarmCode.rows.length != 0) {
-                    message = "Farm Code Already Exist"
-                    console.log(message)
-                    return res.status(500).send({ data: { message: message } })
-                }
-
                 const editFarm = await pool.query(`UPDATE farms SET farm_no = $1, farm_code = $2, farm_name = $3, farm_image = $4, address = $5, moo = $6, soi = $7, road = $8, sub_district = $9, district = $10, province = $11, postcode = $12 WHERE farm_id = $13`,
                     [farm_no, farm_code, farm_name, farm_image, address, moo, soi, road, sub_district, district, province, postcode, farm_id]);
                 const check = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
                 message = "Farm Updated :)"
                 console.log(message);
-                return res.status(200).send({ message: message, rows: check.rows })
+                return res.status(200).send({ data: { message: message, rows: check.rows } })
             } else {
                 message = "You don't have permission to update!!"
                 console.log(message)
@@ -418,7 +405,7 @@ exports.deleteFarm = async (req, res) => {
                 const deleteFarm = await pool.query(`DELETE FROM farms WHERE farm_id = $1`, [farm_id]);
                 message = "Farm Deleted :)"
                 console.log(message);
-                return res.status(200).send({ message: message })
+                return res.status(200).send({ data: { message: message } })
             } else {
                 message = "You don't have permission to delete!!"
                 console.log(message)
