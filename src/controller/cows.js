@@ -514,3 +514,267 @@ exports.deleteCowByID = async (req, res) => {
     }
     return res.status(500).send({ data: { message: message } })
 }
+
+exports.getCowsFilterByOld = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkfarm.rows.length == 0 || null) {
+            message = "Don't have Farm ID : " + farm_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID : " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+
+            const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+            console.log(checkMember.rowCount)
+
+            if (checkMember.rows.length == 1) {
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                        INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                        INNER JOIN species ON cows.specie_id = species.specie_id
+                        INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                        WHERE farm_id = $1
+                        ORDER BY cow_id asc`, [farm_id]
+                )
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 2, message: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 1, rows: getCowInFarm.rows } })
+                }
+            } else {
+                message = "You are not a member in this farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.getCowsFilterByNew = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkfarm.rows.length == 0 || null) {
+            message = "Don't have Farm ID : " + farm_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID : " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+
+            const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+            console.log(checkMember.rowCount)
+
+            if (checkMember.rows.length == 1) {
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                        INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                        INNER JOIN species ON cows.specie_id = species.specie_id
+                        INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                        WHERE farm_id = $1
+                        ORDER BY cow_id desc`, [farm_id]
+                )
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 2, message: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 1, rows: getCowInFarm.rows } })
+                }
+            } else {
+                message = "You are not a member in this farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.getCowsFilterByYoung = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkfarm.rows.length == 0 || null) {
+            message = "Don't have Farm ID : " + farm_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID : " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+
+            const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+            console.log(checkMember.rowCount)
+
+            if (checkMember.rows.length == 1) {
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                        INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                        INNER JOIN species ON cows.specie_id = species.specie_id
+                        INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                        WHERE farm_id = $1
+                        ORDER BY cow_birthday desc`, [farm_id]
+                )
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 2, message: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 1, rows: getCowInFarm.rows } })
+                }
+            } else {
+                message = "You are not a member in this farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.getCowsFilterByOld = async (req, res) => {
+
+    try {
+        const user_id = req.body.user_id;
+        const farm_id = req.body.farm_id;
+        message = "Method Error"
+
+        if (farm_id.length == 0 || null) {
+            message = "Please Fill Farm ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (user_id.length == 0 || null) {
+            message = "Please Fill User ID"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const checkfarm = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+
+        if (checkfarm.rows.length == 0 || null) {
+            message = "Don't have Farm ID : " + farm_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID : " + user_id
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else {
+
+            const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+            console.log(checkMember.rowCount)
+
+            if (checkMember.rows.length == 1) {
+                const getCowInFarm = await pool.query(
+                    `SELECT * FROM cows 
+                        INNER JOIN cow_type ON cows.type_id = cow_type.type_id 
+                        INNER JOIN species ON cows.specie_id = species.specie_id
+                        INNER JOIN cow_status ON cows.status_id = cow_status.status_id 
+                        WHERE farm_id = $1
+                        ORDER BY cow_birthday asc`, [farm_id]
+                )
+
+                if (getCowInFarm.rows.length == 0 || null) {
+                    message = "Don't have cow in farm ID: " + farm_id
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 2, message: message } })
+                } else {
+                    message = "Success :)"
+                    console.log(message)
+                    return res.status(200).send({ data: { ment: 1, rows: getCowInFarm.rows } })
+                }
+            } else {
+                message = "You are not a member in this farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+        }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err)
+    }
+    return res.status(500).send({ data: { message: message } })
+}

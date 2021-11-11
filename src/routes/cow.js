@@ -13,6 +13,14 @@ module.exports = function (app) {
 
     app.post('/farms/cow', controller.getCowsByFarm);
 
+    app.post('/filter/cowid/new', controller.getCowsFilterByNew);
+
+    app.post('/filter/cowid/old', controller.getCowsFilterByOld);
+
+    app.post('/filter/cowage/young', controller.getCowsFilterByYoung);
+
+    app.post('/filter/cowage/old', controller.getCowsFilterByOld);
+
     app.get('/cows', controller.getAllCow);
 
     app.post('/cows/count', controller.getNumOfCowByType);
