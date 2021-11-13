@@ -68,8 +68,8 @@ exports.getAllMilkWeek = async (req, res) => {
                             AND milk_date =$2`, [farm_id, date]);
     
                     var dayofweek = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ",
-                        "พฤหัสบดี ", "ศุกร์", "เสาร์", "อาทิตย์"]
-               
+                        "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"]
+                        
                     getMilk = getMilkByDate.rows[0].total
                     getSum += getMilk
                 } catch (error) {
@@ -228,7 +228,7 @@ exports.getAllMilkYear = async (req, res) => {
                 let getMonth = getAllMilkbyMonthofYear.rows[i].month
                 let getCount = getAllMilkbyMonthofYear.rows[i].sum
                 var months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
-                    "พฤษภาคม ", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
+                    "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
                     "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
                 let month = months[i]
                 milk[i] = { month: month, sum: getCount }
