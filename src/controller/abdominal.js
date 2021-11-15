@@ -933,7 +933,7 @@ exports.getNotiAbByFarmID = async (req, res) => {
                 `SELECT * FROM abdominal a
                 INNER JOIN cows c ON c.cow_id = a.cow_id
                 WHERE c.farm_id = $1 AND ab_status = $2 AND ab_calf = $3
-                ORDER BY ab_date`, [farm_id, "success", "false"]);
+                ORDER BY ab_date`, [farm_id, "success", "f"]);
 
             if (getAbByFarmID.rows.length != 0) {
                 message = "Sussess :)"
