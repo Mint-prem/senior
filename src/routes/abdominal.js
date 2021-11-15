@@ -14,6 +14,10 @@ module.exports = function (app) {
     app.post('/abdominal/id', controller.getAbdominalByID);
 
     app.post('/farms/abdominal', controller.getAbdominalByFarmID);
+
+    app.post('/notification/ab/wait', controller.getNotiWaitAbByFarmID);
+
+    app.post('/notification/ab', controller.getNotiAbByFarmID);
     
     app.post('/farms/abdominal/cows', controller.getDistinctCowByFarmID);
     
