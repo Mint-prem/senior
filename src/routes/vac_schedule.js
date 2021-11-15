@@ -29,4 +29,7 @@ module.exports = function (app) {
 
     app.delete('/schedules/delete', controller.deleteScheduleByID);
 
+    app.post('/notification/vac', controller.getNotiVacByFarmID);
+
+
 };

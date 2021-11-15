@@ -654,3 +654,73 @@ exports.deleteScheduleByID = async (req, res) => {
     return res.status(500).send({ data: { message: message } })
 
 }
+
+exports.getNotiVacByFarmID = async (req, res) => {
+
+    try {
+
+        if (req.body.farm_id.length == 0 || undefined) {
+            message = "Farm ID is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (req.body.user_id.length == 0 || undefined) {
+            message = "User ID  is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const farm_id = req.body.farm_id
+        const user_id = req.body.user_id
+
+        const checkUser = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [user_id])
+        const findFarmByID = await pool.query(`SELECT * FROM farms WHERE farm_id = $1`, [farm_id])
+        const checkMember = await pool.query(`SELECT * FROM workers WHERE user_id = $1 AND farm_id = $2`, [user_id, farm_id])
+
+
+        if (checkUser.rows.length == 0 || null) {
+            message = "Don't have User ID " + user_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (findFarmByID.rows.length == 0 || null) {
+            message = "Don't have farm ID " + farm_id;
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        } else if (checkMember.rows.length != 0) {
+
+            var curr = new Date();
+            day = curr.getDay();
+            var date = new Date(curr)
+            date.setDate(date.getDate() - 14)
+
+            console.log(curr)
+            console.log(date)
+
+            const getScheByFarm = await pool.query(
+                `SELECT * FROM vaccine_schedule vs 
+                    INNER JOIN cows c ON c.cow_id = vs.cow_id
+                    INNER JOIN vaccines v ON v.vaccine_id = vs.vaccine_id
+                    WHERE c.farm_id = $1 AND next_date BETWEEN $2 AND $3
+                    ORDER BY next_date asc`, [farm_id, date, curr]);
+
+            if (getScheByFarm.rows.length != 0) {
+                message = "Sussess :)"
+                console.log(message);
+                return res.status(200).send({ data: { ment: 1, rows: getScheByFarm.rows } })
+            } else {
+                message = "Don't have schedule data in farm";
+                console.log(message);
+                return res.status(200).send({ data: { ment: 2, message: message } })
+            }
+
+        } else {
+            message = "You are not a member in this farm"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+    } catch (err) {
+        message = "Error";
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}
