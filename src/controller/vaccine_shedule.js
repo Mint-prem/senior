@@ -690,7 +690,7 @@ exports.getNotiVacByFarmID = async (req, res) => {
             var curr = new Date();
             day = curr.getDay();
             var date = new Date(curr)
-            date.setDate(date.getDate() - 14)
+            date.setDate(date.getDate() + 14)
 
             console.log(curr)
             console.log(date)
