@@ -209,7 +209,7 @@ exports.getNumOfCowByType = async (req, res) => {
                 for (let i = 0; i < getCountCowInFarm.rows.length; i++) {
 
                         var getType = getCountCowInFarm.rows[i].type_id - 1
-                        var getCount = getCountCowInFarm.rows[i].count
+                        var getCount = parseInt(getCountCowInFarm.rows[i].count)
                         var type = ["ลูกโค", "โคสาว", "โคท้อง", "โคแก่", "โคผสมพันธ์ ", "โคแห้งนม"]
                         var types = type[getType]
 

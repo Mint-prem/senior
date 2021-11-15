@@ -15,6 +15,8 @@ module.exports = function (app) {
 
     app.post('/farms/parturition', controller.getParturitionByFarmID);
 
+    app.post('/farms/parturition/cows', controller.getDistinctCowByFarmID);
+
     app.post('/cows/parturition', controller.getParturitionByCowID);
 
     app.post('/parturition/create', controller.addNewParturition);
