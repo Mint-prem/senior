@@ -880,7 +880,7 @@ exports.getNotiWaitAbByFarmID = async (req, res) => {
                 console.log(message);
                 return res.status(200).send({ data: { ment: 1, rows: getAbByFarmID.rows } })
             } else {
-                message = ("Don't have wait status abdominal data in farm");
+                message = ("Don't have wait status abdominal notification in farm");
                 return res.status(200).send({ data: { ment: 2, message: message } })
             }
 
@@ -940,7 +940,7 @@ exports.getNotiAbByFarmID = async (req, res) => {
                 console.log(message);
                 return res.status(200).send({ data: { ment: 1, rows: getAbByFarmID.rows } })
             } else {
-                message = ("Don't have wait status abdominal data in farm");
+                message = ("Don't have any abdominal notification in farm");
                 return res.status(200).send({ data: { ment: 2, message: message } })
             }
 

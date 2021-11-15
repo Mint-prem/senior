@@ -707,7 +707,7 @@ exports.getNotiVacByFarmID = async (req, res) => {
                 console.log(message);
                 return res.status(200).send({ data: { ment: 1, rows: getScheByFarm.rows } })
             } else {
-                message = "Don't have schedule data in farm";
+                message = "Don't have any schedule in the next two weeks data in farm";
                 console.log(message);
                 return res.status(200).send({ data: { ment: 2, message: message } })
             }
