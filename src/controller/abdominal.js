@@ -956,3 +956,79 @@ exports.getNotiAbByFarmID = async (req, res) => {
     }
     return res.status(500).send({ data: { message: message } })
 }
+
+exports.updateFailAbStatusByID = async (req, res) => {
+
+    try {
+
+        if (req.body.abdominal_id.length == 0 || undefined) {
+            message = "Abdominal ID is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const abdominal_id = req.body.abdominal_id
+
+        const checkAbID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
+
+        if (checkAbID.rows.length == 0 || null) {
+            message = "Don't have abdominal ID " + abdominal_id;
+            return res.status(500).send({ data: { message: message } })
+        }
+
+            const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
+            const ret = await pool.query(`UPDATE abdominal SET ab_status = $1 WHERE abdominal_id = $2`,
+                ["fail", abdominal_id]);
+
+            const checkUpdate = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1 `, [abdominal_id])
+
+            if (checkUpdate.rows.length != 0) {
+                message = "Abdominal Updated :)"
+                console.log(message);
+                return res.status(200).send({ data: { message: message, rows: checkUpdate.rows } })
+            }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}
+
+exports.updateSuccessAbStatusByID = async (req, res) => {
+
+    try {
+
+        if (req.body.abdominal_id.length == 0 || undefined) {
+            message = "Abdominal ID is required"
+            console.log(message)
+            return res.status(500).send({ data: { message: message } })
+        }
+
+        const abdominal_id = req.body.abdominal_id
+
+        const checkAbID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
+
+        if (checkAbID.rows.length == 0 || null) {
+            message = "Don't have abdominal ID " + abdominal_id;
+            return res.status(500).send({ data: { message: message } })
+        }
+
+            const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
+            const ret = await pool.query(`UPDATE abdominal SET ab_status = $1 WHERE abdominal_id = $2`,
+                ["success", abdominal_id]);
+
+            const checkUpdate = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1 `, [abdominal_id])
+
+            if (checkUpdate.rows.length != 0) {
+                message = "Abdominal Updated :)"
+                console.log(message);
+                return res.status(200).send({ data: { message: message, rows: checkUpdate.rows } })
+            }
+
+    } catch (err) {
+        message = "Error"
+        console.error(err.message);
+    }
+    return res.status(500).send({ data: { message: message } })
+}

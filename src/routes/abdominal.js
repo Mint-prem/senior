@@ -31,6 +31,10 @@ module.exports = function (app) {
 
     app.put('/abdominal/edit', controller.updateAbdominalByID);
 
+    app.put('/abdominal/fail', controller.updateFailAbStatusByID);
+
+    app.put('/abdominal/success', controller.updateSuccessAbStatusByID);
+
     app.delete('/abdominal/delete', controller.deleteAbdominalByID);
 
 };
