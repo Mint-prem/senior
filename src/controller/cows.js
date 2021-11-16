@@ -333,6 +333,14 @@ exports.addNewCow = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
 
+            const checkCowNameInFarm = await pool.query(`SELECT * FROM cows WHERE cow_name = $1 AND farm_id = $2`, [cow_name, farm_id])
+
+            if (checkCowNameInFarm.rows.length > 0) {
+                message = "Cow name already exist in farm"
+                console.log(message)
+                return res.status(500).send({ data: { message: message } })
+            }
+
             const checkCowNoInFarm = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2`, [cow_no, farm_id])
 
             if (checkCowNoInFarm.rows.length > 0) {
@@ -410,6 +418,7 @@ exports.updateCowByID = async (req, res) => {
             console.log(message)
             return res.status(500).send({ data: { message: message } })
         } else if (checkMember.rows.length != 0) {
+
             const findCowInFarm = await pool.query(`SELECT * FROM cows WHERE cow_id = $1 AND farm_id = $2`, [cow_id, farm_id])
 
             if (findCowInFarm.rows.length == 0 || null) {
@@ -417,6 +426,13 @@ exports.updateCowByID = async (req, res) => {
                 console.log(message)
                 return res.status(500).send({ data: { message: message } })
             } else {
+                const checkCowNameInFarm = await pool.query(`SELECT * FROM cows WHERE cow_name = $1 AND farm_id = $2 AND cow_id <> $3`, [cow_name, farm_id, cow_id])
+
+                if (checkCowNameInFarm.rows.length > 0) {
+                    message = "Cow name already exist"
+                    console.log(message)
+                    return res.status(500).send({ data: { message: message } })
+                }
 
                 const checkCowNoInFarm = await pool.query(`SELECT * FROM cows WHERE cow_no = $1 AND farm_id = $2 AND cow_id <> $3`, [cow_no, farm_id, cow_id])
 
