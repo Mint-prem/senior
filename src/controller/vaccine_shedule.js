@@ -310,7 +310,9 @@ exports.getVacScheduleByCowID = async (req, res) => {
                     JOIN cows c ON c.farm_id = f.farm_id
                     JOIN vaccine_schedule vs ON vs.cow_id = c.cow_id
                     JOIN vaccines v ON vs.vaccine_id = v.vaccine_id
-                    WHERE vs.vaccine_id = $1 and vs.cow_id = $2 and f.farm_id = $3`, [vaccine_id, cow_id, farm_id]);
+                    WHERE vs.vaccine_id = $1 and vs.cow_id = $2 and f.farm_id = $3
+                    ORDER BY vac_date desc
+                    `, [vaccine_id, cow_id, farm_id]);
                 if (getScheByCow.rows.length != 0) {
                     message = "Sussess :)"
                     console.log(message);
@@ -383,13 +385,14 @@ exports.getScheduleByCowID = async (req, res) => {
             if (cowInFarm.rows.length > 0) {
                 const getScheByCow = await pool.query(`SELECT * FROM vaccine_schedule vs
                 INNER JOIN vaccines v ON v.vaccine_id = vs.vaccine_id
-                INNER JOIN cows c ON vs.cow_id = c.cow_id WHERE vs.cow_id = $1`, [cow_id]);
+                INNER JOIN cows c ON vs.cow_id = c.cow_id WHERE vs.cow_id = $1
+                ORDER BY vac_date desc`, [cow_id]);
                 if (getScheByCow.rows.length != 0) {
                     message = "Sussess :)"
                     console.log(message);
                     return res.status(200).send({ data: { ment: 1, rows: getScheByCow.rows } })
                 } else {
-                    message = "Cow id " + cow_id + " don't have parturition data";
+                    message = "Cow id " + cow_id + " don't have vaccine schedule data";
                     console.log(message);
                     return res.status(200).send({ data: { ment: 2, message: message } })
                 }
