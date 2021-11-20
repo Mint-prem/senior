@@ -18,6 +18,7 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.static('./src/public'));
 
 // middlewares
 app.use(express.json());
