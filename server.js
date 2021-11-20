@@ -47,7 +47,7 @@ require("dotenv").config();
 
 app.get('/', (req, res) =>{
     console.log(res)
-    res.send('Welcome to My Project')
+    res.sendFile(path.join(__dirname+'/src/public/index.html'));
 
 }) 
 
