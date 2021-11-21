@@ -51,6 +51,11 @@ app.get('/', (req, res) =>{
     res.sendFile(path.join(__dirname+'/src/public/index.html'));
 
 }) 
+app.get('/privacy-policy', (req, res) =>{
+  console.log(res)
+  res.sendFile(path.join(__dirname+'/src/public/privacy-policy.html'));
+
+}) 
 
 //pool.connect();
 
