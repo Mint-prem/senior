@@ -52,7 +52,7 @@
                             <li class="scroll-to-section"><a href="#about" class="menu-item">About</a></li>
                             <li class="scroll-to-section"><a href="#promotion" class="menu-item">Features</a></li>
                             <li class="scroll-to-section"><a href="#testimonials" class="menu-item">Team</a></li>
-                            <li><a href="https://heroku-diarycattle.herokuapp.com/privacy-policy" class="menu-item">Privacy Policy</a></li>    
+                            <li><a class="menu-item" onclick="myFunction()">Privacy Policy</a></li>    
                             
                             <!--<li class="submenu">
                                 <a href="javascript:;">Drop Down</a>
@@ -354,6 +354,12 @@
 
     <!-- Global Init -->
     <script src="assets/js/custom.js"></script>
+
+    <script>
+        function myFunction() {
+            location.replace("/privacy-policy")
+        }
+    </script>
 
 </body>
 </html>

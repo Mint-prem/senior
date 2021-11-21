@@ -51,10 +51,11 @@
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="btn-outline-reg back"><a href="index.html" class="menu-item">Home</a></li>
-                            <li class="btn-outline-reg back"><a href="index.html" class="menu-item">About</a></li>
-                            <li class="btn-outline-reg back"><a href="index.html" class="menu-item">Team</a></li>
-                            <li><a href="https://heroku-diarycattle.herokuapp.com/privacy-policy" class="menu-item">Privacy Policy</a></li>    
+                            <li class="btn-outline-reg back"><a onclick="goToWelcome()" class="menu-item">Home</a></li>
+                            <li class="btn-outline-reg back"><a onclick="goToAbout()" class="menu-item">About</a></li>
+                            <li class="btn-outline-reg back"><a onclick="goToFeatures()"  class="menu-item">Features</a></li>
+                            <li class="btn-outline-reg back"><a onclick="goToTeams()"  class="menu-item">Team</a></li>
+                            <li><a onclick="goToPolicy()" class="menu-item">Privacy Policy</a></li>    
                             
                             <!--<li class="submenu">
                                 <a href="javascript:;">Drop Down</a>
@@ -360,5 +361,22 @@
     <!-- Global Init -->
     <script src="assets/js/custom.js"></script>
     
+    <script>
+        function goToWelcome() {
+            location.replace("/#welcome")
+        }
+        function goToAbout() {
+            location.replace("/#about")
+        }
+        function goToFeatures() {
+            location.replace("/#promotion")
+        }
+        function goToTeams() {
+            location.replace("/#testimonials")
+        }
+        function goToPolicy() {
+            location.replace("/privacy-policy")
+        }
+    </script>
 </body>
 </html>

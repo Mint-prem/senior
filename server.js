@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000
+const path = require('path')
 //const pool = require(`./src/database/pool`);
 
 const { Pool } = require('pg');
@@ -19,6 +20,7 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.static('./src/public'));
+
 
 // middlewares
 app.use(express.json());
@@ -51,11 +53,11 @@ app.get('/', (req, res) =>{
     res.sendFile(path.join(__dirname+'/src/public/index.html'));
 
 }) 
-app.get('/privacy-policy', (req, res) =>{
+
+app.get('/privacy-policy', (req, res) => {
   console.log(res)
   res.sendFile(path.join(__dirname+'/src/public/privacy-policy.html'));
-
-}) 
+});
 
 //pool.connect();
 
