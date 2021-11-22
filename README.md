@@ -1,16 +1,26 @@
-## start 
-node server
-npm run dev <nodemon>
+# Installation
+1. [install node js](https://nodejs.org/en/download/) \
+    to make sure, try to run 'npm' in terminal(MacOS) or command prompt(Windows)
+2. install express : run command
+    >npm install -g express
+    
+    some MacOS should try
+    >sudo npm install -g express
+3. run 'npm install' to install package
+    >npm install
+4. about \'**DATABASE**\' to setting port, host, database, username, password in file \'**pool.js**\'
+5. about \'**DEPLOYMENT**\' to setting port and another attribute in file \'**server.js**\'
+# Getting start 
+run with command
+>node server\
+>nodemon server
 
-#### CREDIT ####
+to use nodemon, should
+[install nodemon](https://www.npmjs.com/package/nodemon?activeTab=readme) first
 
-## ติดตั้ง Express
-https://nextflow.in.th/2015/install-express-js/
 
-## API DB Backend
-https://youtu.be/7NfvC-gOcRc
-https://youtu.be/o2cwlmgeZDk **
 
-## Test
+
+
 
 
