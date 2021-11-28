@@ -478,7 +478,7 @@ exports.addNewSchedule = async (req, res) => {
             message = "Schedule Created :)"
 
             console.log(message);
-            return res.status(200).send({ message: message, rows: checkAdd.rows[0] })
+            return res.status(200).send({ data : { message: message, rows: checkAdd.rows[0] } } )
 
         } else {
             message = "You are not a member in this farm"
@@ -565,7 +565,7 @@ exports.updateScheduleByID = async (req, res) => {
             const checkUpdate = await pool.query(`SELECT * FROM vaccine_schedule WHERE schedule_id = ` + schedule_id)
             message = "Schedule Updated :)"
             console.log(message);
-            return res.status(200).send({ message: message, rows: checkUpdate.rows })
+            return res.status(200).send({ data : { message: message, rows: checkUpdate.rows } })
 
         } else {
             message = "You are not a member in this farm"
