@@ -235,7 +235,7 @@ exports.updateRoleByWorkerID = async (req, res) => {
         } else if (checkMember.rows.length != 0) {
 
             if (checkMember.rows[0].role_id == 1) {
-                const updateWorker = await pool.query(`UPDATE workers SET role_id = $1 WHERE worker_id = $4`,
+                const updateWorker = await pool.query(`UPDATE workers SET role_id = $1 WHERE worker_id = $2`,
                     [role_id, worker_id]);
 
                 const newUpdate = await pool.query(`SELECT * FROM workers WHERE worker_id = ` + worker_id)
