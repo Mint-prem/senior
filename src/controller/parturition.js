@@ -393,19 +393,7 @@ exports.addNewParturition = async (req, res) => {
             const addPar = await pool.query(`INSERT INTO parturition (ab_id, par_date, calf_name, calf_sex, par_caretaker, par_status, note) values ($1,$2,$3,$4,$5,$6,$7)`,
                 [ab_id, par_date, calf_name, calf_sex, par_caretaker, par_status, note]);
 
-            const findByID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [ab_id])
-            const cow_id = findByID.rows[0].cow_id
-            const round = findByID.rows[0].round
-            const ab_date = findByID.rows[0].ab_date
-            const ab_status = findByID.rows[0].ab_status
-            const ab_caretaker = findByID.rows[0].ab_caretaker
-            const semen_id = findByID.rows[0].semen_id
-            const semen_name = findByID.rows[0].semen_name
-            const semen_specie = findByID.rows[0].semen_specie
-            const note = findByID.rows[0].note
-
-            const ret = await pool.query(`UPDATE abdominal SET cow_id = $1, round = $2, ab_date = $3, ab_status = $4, ab_caretaker = $5, semen_id = $6, semen_name = $7, semen_specie = $8, ab_calf = $9, note = $10 WHERE abdominal_id = $11`,
-                [cow_id, round, ab_date, ab_status, ab_caretaker, semen_id, semen_name, semen_specie, 't', note, ab_id]);
+            const UpdateAb = await pool.query(`UPDATE abdominal SET ab_calf = $1 WHERE abdominal_id = $2`, ['t', ab_id]);
 
             const checkAdd = await pool.query(`SELECT * FROM parturition WHERE ab_id = $1 AND par_date = $2 AND calf_name = $3 AND calf_sex = $4`, [ab_id, par_date, calf_name, calf_sex])
             message = "Parturition Created :)"
