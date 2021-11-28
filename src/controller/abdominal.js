@@ -960,6 +960,7 @@ exports.getNotiAbByFarmID = async (req, res) => {
 exports.updateFailAbStatusByID = async (req, res) => {
 
     try {
+        const abdominal_id = req.body.abdominal_id
 
         if (req.body.abdominal_id.length == 0 || undefined) {
             message = "Abdominal ID is required"
@@ -967,7 +968,6 @@ exports.updateFailAbStatusByID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         }
 
-        const abdominal_id = req.body.abdominal_id
 
         const checkAbID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
 
@@ -998,6 +998,7 @@ exports.updateFailAbStatusByID = async (req, res) => {
 exports.updateSuccessAbStatusByID = async (req, res) => {
 
     try {
+        const abdominal_id = req.body.abdominal_id
 
         if (req.body.abdominal_id.length == 0 || undefined) {
             message = "Abdominal ID is required"
@@ -1005,7 +1006,6 @@ exports.updateSuccessAbStatusByID = async (req, res) => {
             return res.status(500).send({ data: { message: message } })
         }
 
-        const abdominal_id = req.body.abdominal_id
 
         const checkAbID = await pool.query(`SELECT * FROM abdominal WHERE abdominal_id = $1`, [abdominal_id])
 
