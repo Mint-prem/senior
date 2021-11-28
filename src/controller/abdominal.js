@@ -766,10 +766,10 @@ exports.updateAbdominalByID = async (req, res) => {
         }
 
     } catch (err) {
-        message = "Error"
+        message = err
         console.error(err.message);
     }
-    return res.status(500).send({ data: { message: message } })
+    return res.status(500).send({ data: { message: err} })
 }
 
 exports.deleteAbdominalByID = async (req, res) => {
